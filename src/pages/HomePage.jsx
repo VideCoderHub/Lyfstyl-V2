@@ -1,8 +1,34 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FEATURES, STATS } from '../data'
+import MediaCard from '../components/MediaCard'
+import { api } from '../api/client'
+import { useAuth } from '../context/AuthContext'
+import { FEATURES } from '../data'
 import { FEATURE_ICONS } from '../components/Icons'
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuth()
+  const [stats, setStats] = useState([
+    { value: '40K+', label: 'Creators' },
+    { value: '18K+', label: 'Recipes Shared' },
+    { value: '12K+', label: 'Dance Clips' },
+    { value: '90+', label: 'Countries' },
+  ])
+  const [recommendations, setRecommendations] = useState([])
+
+  useEffect(() => {
+    api.getStats().then((data) => {
+      const s = data.stats
+      setStats([
+        { value: s.creators, label: 'Creators' },
+        { value: s.recipesShared, label: 'Recipes Shared' },
+        { value: s.danceClips, label: 'Dance Clips' },
+        { value: s.countries, label: 'Countries' },
+      ])
+    }).catch(() => {})
+    api.getRecommendations().then((data) => setRecommendations(data.items?.slice(0, 4) ?? [])).catch(() => {})
+  }, [isAuthenticated])
+
   return (
     <main>
       <section className="hero">
@@ -18,16 +44,17 @@ export default function HomePage() {
             Where flavour meets <em>movement</em>
           </h1>
           <p className="hero__lede">
-            The social space for food creators and dancers to share, challenge, and grow together.
+            Join structured food and dance communities — not endless scrolling. AI personalizes your
+            feed from day one.
           </p>
           <div className="hero__cta">
-            <Link className="btn btn--primary btn--lg" to="/join">
-              Join the Community
+            <Link className="btn btn--primary btn--lg" to={isAuthenticated ? '/dashboard' : '/join'}>
+              {isAuthenticated ? 'Go to dashboard' : 'Join the Community'}
               <span aria-hidden="true">→</span>
             </Link>
             <Link className="btn btn--outline btn--lg" to="/discover">
               <span className="play" aria-hidden="true" />
-              Watch the vibe
+              Explore feed
             </Link>
           </div>
         </div>
@@ -54,7 +81,7 @@ export default function HomePage() {
 
       <section className="stats" aria-label="Community stats">
         <div className="stats__inner">
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="stat">
               <strong>{stat.value}</strong>
               <span>{stat.label}</span>
@@ -63,24 +90,48 @@ export default function HomePage() {
         </div>
       </section>
 
+      {recommendations.length ? (
+        <section className="content-wrap home-recs">
+          <div className="section-head">
+            <h2>Recommended for you</h2>
+            <p>Personalized picks from Lyfstyl communities — food, dance, and creators near you.</p>
+          </div>
+          <div className="card-grid card-grid--stagger">
+            {recommendations.map((item) => (
+              <MediaCard
+                key={`${item.id}-${item.title}`}
+                to={item.time ? `/recipes/${item.id}` : `/moves/${item.id}`}
+                image={item.image}
+                tag={item.time ? 'Recipe' : 'Move'}
+                tagClass={item.time ? 'tag--coral' : 'tag--lime'}
+                title={item.title}
+                meta={item.time ? `${item.time} · ${item.level}` : `${item.style} · ${item.length}`}
+                portrait={!item.time}
+                play={!item.time}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="pillars">
         <div className="pillars__intro">
-          <h2>Two cultures. One feed.</h2>
-          <p>Scroll recipes beside dance clips — built for creators who cook and move.</p>
+          <h2>Structured communities. Not noisy feeds.</h2>
+          <p>Discussion, learning, collaboration, marketplace, and competitions — starting with food and dance.</p>
         </div>
         <div className="pillars__grid">
           <Link to="/recipes" className="pillar pillar--food">
             <div className="pillar__visual" />
             <div className="pillar__copy">
               <h3>Food stories</h3>
-              <p>Plate, shoot, and share recipes with the people behind every dish.</p>
+              <p>Recipes, Soul Food, Street Food, and cooking competitions with gamified badges.</p>
             </div>
           </Link>
           <Link to="/moves" className="pillar pillar--dance">
             <div className="pillar__visual" />
             <div className="pillar__copy">
               <h3>Dance energy</h3>
-              <p>Drop clips, join battles, and get discovered by a global dance crowd.</p>
+              <p>Freestyle, battles, and creator challenges — built for global dance communities.</p>
             </div>
           </Link>
         </div>
@@ -95,7 +146,7 @@ export default function HomePage() {
           Great community
         </div>
         <h2>Ready to taste the rhythm?</h2>
-        <p>Free to join. Built for creators who live between the kitchen and the floor.</p>
+        <p>Free to join. Personalized by country, language, and passions.</p>
         <Link className="btn btn--primary btn--lg" to="/join">
           Sign up — it&apos;s free
         </Link>

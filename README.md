@@ -1,26 +1,51 @@
-# Lyfstyl Landing (MVP)
+# Lyfstyl — Food & Dance Social Platform
 
-React + Vite landing page for a **food + dance** social product.
+A full product experience for the Lyfstyl vision: structured food & dance communities, AI-style personalization, creation, gamification, and challenges.
 
-## Pages
+## What's included
 
-| Menu | Route |
-|------|-------|
-| Home | `/` |
-| Discover | `/discover` |
-| Recipes | `/recipes` |
-| Moves | `/moves` |
-| Community | `/community` |
-| Challenges | `/challenges` |
-| Log in | `/login` |
-| Join Now | `/join` |
+- **Auth** — Register, login, social sign-in modal (Google/Apple/Facebook demo flow)
+- **Onboarding** — Age, country, language, interests, avatar picker
+- **Discover** — Personalized feed, search with fuzziness, filters
+- **Content** — Recipe & move detail pages with ingredients, steps, video, comments
+- **Create** — Publish recipes and dance clips to communities
+- **Communities** — Browse, join/leave, community detail pages with feeds
+- **Creators** — Public creator profiles
+- **Dashboard** — Points, badges, saved library, notifications, challenges
+- **Gamification** — Stars, saves, points, badges (Bronze Chef → Legendary Creator)
 
-## Run
+## Run locally
 
 ```bash
-cd feastbeat
 npm install
 npm run dev
 ```
 
-Open the local URL Vite prints (usually `http://localhost:5173`).
+- **Frontend:** http://localhost:5173
+- **API:** http://localhost:3001
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Run API + frontend together |
+| `npm run build` | Build frontend |
+| `npm run start` | Production server (serves `dist/` + API) |
+| `npm run seed` | Reset database |
+
+## Routes
+
+| Page | Path |
+|------|------|
+| Home | `/` |
+| Discover | `/discover` |
+| Recipes | `/recipes` · `/recipes/:id` |
+| Moves | `/moves` · `/moves/:id` |
+| Communities | `/community` · `/community/:slug` |
+| Creator profile | `/creators/:id` |
+| Challenges | `/challenges` |
+| Dashboard | `/dashboard` (auth required) |
+| Create | `/create` (auth required) |
+| Join / Login | `/join` · `/login` |
+
+Database: `server/data/lyfstyl.json`

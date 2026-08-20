@@ -1,15 +1,22 @@
 {
-  "name": "feastbeat",
+  "name": "lyfstyl",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "node --watch server/index.js",
     "build": "vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "start": "node server/index.js",
+    "seed": "node server/seed.js",
+    "lint": "oxlint"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2"
@@ -18,6 +25,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
+    "concurrently": "^9.1.2",
     "oxlint": "^1.75.0",
     "vite": "^8.2.0"
   }

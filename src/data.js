@@ -1,5 +1,6 @@
 export const NAV = [
   { label: 'Home', path: '/' },
+  { label: 'Feed', path: '/feed', auth: true },
   { label: 'Discover', path: '/discover' },
   { label: 'Recipes', path: '/recipes' },
   { label: 'Moves', path: '/moves' },
@@ -7,29 +8,36 @@ export const NAV = [
   { label: 'Challenges', path: '/challenges' },
 ]
 
+export const FOOTER_LINKS = [
+  { label: 'About', path: '/' },
+  { label: 'Communities', path: '/community' },
+  { label: 'Create', path: '/create' },
+  { label: 'Dashboard', path: '/dashboard' },
+]
+
 export const FEATURES = [
   {
     title: 'Discover',
     text: 'Explore recipes and dance styles from around the world.',
-    accent: 'coral',
+    accent: 'food',
     to: '/discover',
   },
   {
     title: 'Create',
     text: 'Share dishes, choreography, and the story behind both.',
-    accent: 'lime',
+    accent: 'dance',
     to: '/recipes',
   },
   {
     title: 'Connect',
     text: 'Join food lovers and dancers in one vibrant community.',
-    accent: 'coral',
+    accent: 'food',
     to: '/community',
   },
   {
     title: 'Challenge',
     text: 'Cook-offs, dance battles, and weekly creator challenges.',
-    accent: 'lime',
+    accent: 'dance',
     to: '/challenges',
   },
 ]

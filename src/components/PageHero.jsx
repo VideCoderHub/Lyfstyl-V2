@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 export default function PageHero({ eyebrow, title, lede, actions }) {
   return (
     <section className="page-hero">
+      <div className="page-hero__glow page-hero__glow--1" aria-hidden="true" />
+      <div className="page-hero__glow page-hero__glow--2" aria-hidden="true" />
       <div className="page-hero__inner">
         {eyebrow ? <p className="page-hero__eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
