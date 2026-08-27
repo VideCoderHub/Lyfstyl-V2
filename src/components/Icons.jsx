@@ -74,4 +74,6 @@ export const FEATURE_ICONS = {
   Create: IconCreate,
   Connect: IconConnect,
   Challenge: IconChallenge,
+  'Cook-off': IconChallenge,
+  Battle: IconChallenge,
 }

@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { FOOTER_LINKS, NAV } from '../data'
+import { LOOP_VIDEOS } from '../data/media'
 import NotificationBell from './NotificationBell'
+import VideoPortal from './VideoPortal'
 import { useAuth } from '../context/AuthContext'
+
+const NAV_VIDEOS = {
+  cooking: LOOP_VIDEOS.cooking,
+  dance: LOOP_VIDEOS.dance,
+}
 
 function userInitials(name) {
   if (!name) return '?'
@@ -105,17 +112,29 @@ export default function Layout() {
           className={`nav__links ${menuOpen ? 'is-open' : ''}`}
           aria-label="Primary"
         >
-          {NAV.filter((item) => !item.auth || isAuthenticated).map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => (isActive ? 'is-active' : undefined)}
-              end={item.path === '/'}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {NAV.filter((item) => !item.auth || isAuthenticated).map((item) =>
+            item.navVideo ? (
+              <VideoPortal
+                key={item.path}
+                to={item.path}
+                video={NAV_VIDEOS[item.navVideo]}
+                title={item.label}
+                accent={item.navVideo === 'dance' ? 'dance' : 'food'}
+                compact
+                className="nav__video-portal"
+              />
+            ) : (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+                end={item.path === '/'}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </NavLink>
+            ),
+          )}
         </nav>
 
         <div className="nav__actions">

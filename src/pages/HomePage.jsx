@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import MascotCharacter from '../components/MascotCharacter'
 import MediaCard from '../components/MediaCard'
+import VideoPortal from '../components/VideoPortal'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { FEATURES } from '../data'
+import { COMMUNITY_PORTALS, LOOP_VIDEOS } from '../data/media'
 import { FEATURE_ICONS } from '../components/Icons'
 
 export default function HomePage() {
@@ -31,11 +34,21 @@ export default function HomePage() {
 
   return (
     <main>
-      <section className="hero">
+      <section className="hero hero--motion">
         <div className="hero__media" aria-hidden="true">
+          <video className="hero__video hero__video--food" autoPlay muted loop playsInline>
+            <source src={LOOP_VIDEOS.kitchen} type="video/mp4" />
+          </video>
+          <video className="hero__video hero__video--dance" autoPlay muted loop playsInline>
+            <source src={LOOP_VIDEOS.dance} type="video/mp4" />
+          </video>
           <div className="hero__panel hero__panel--food" />
           <div className="hero__panel hero__panel--dance" />
           <div className="hero__veil" />
+          <div className="hero__mascots">
+            <MascotCharacter type="chef" size="sm" />
+            <MascotCharacter type="dancer" size="sm" />
+          </div>
         </div>
 
         <div className="hero__content">
@@ -44,8 +57,7 @@ export default function HomePage() {
             Where flavour meets <em>movement</em>
           </h1>
           <p className="hero__lede">
-            Join structured food and dance communities — not endless scrolling. AI personalizes your
-            feed from day one.
+            Two worlds, one platform — tap a cooking or dance portal below and jump into structured communities.
           </p>
           <div className="hero__cta">
             <Link className="btn btn--primary btn--lg" to={isAuthenticated ? '/dashboard' : '/join'}>
@@ -60,7 +72,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="features" aria-label="Platform features">
+      <section className="portal-strip" aria-label="Community portals">
+        <div className="portal-strip__inner">
+          {COMMUNITY_PORTALS.map((portal) => (
+            <VideoPortal key={portal.id} {...portal} />
+          ))}
+        </div>
+      </section>
+
+      <section className="features features--motion" aria-label="Platform features">
         <div className="features__rail">
           {FEATURES.map((feature) => {
             const Icon = FEATURE_ICONS[feature.title]
@@ -70,7 +90,13 @@ export default function HomePage() {
                 to={feature.to}
                 className={`feature feature--${feature.accent}`}
               >
-                <div className="feature__icon">{Icon ? <Icon /> : null}</div>
+                {feature.mascot ? (
+                  <div className="feature__mascot">
+                    <MascotCharacter type={feature.mascot} size="sm" animate />
+                  </div>
+                ) : (
+                  <div className="feature__icon">{Icon ? <Icon /> : null}</div>
+                )}
                 <h2>{feature.title}</h2>
                 <p>{feature.text}</p>
               </Link>
@@ -79,7 +105,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="stats" aria-label="Community stats">
+      <section className="stats stats--pulse" aria-label="Community stats">
         <div className="stats__inner">
           {stats.map((stat) => (
             <div key={stat.label} className="stat">
@@ -103,7 +129,7 @@ export default function HomePage() {
                 to={item.time ? `/recipes/${item.id}` : `/moves/${item.id}`}
                 image={item.image}
                 tag={item.time ? 'Recipe' : 'Move'}
-                tagClass={item.time ? 'tag--coral' : 'tag--lime'}
+                tagClass={item.time ? 'tag--food' : 'tag--dance'}
                 title={item.title}
                 meta={item.time ? `${item.time} · ${item.level}` : `${item.style} · ${item.length}`}
                 portrait={!item.time}
@@ -114,30 +140,22 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      <section className="pillars">
+      <section className="pillars pillars--video">
         <div className="pillars__intro">
-          <h2>Structured communities. Not noisy feeds.</h2>
-          <p>Discussion, learning, collaboration, marketplace, and competitions — starting with food and dance.</p>
+          <h2>Food and dance — clearly separated, beautifully connected</h2>
+          <p>Tap a looping preview to enter the community you want. No more guessing which battle is which.</p>
         </div>
-        <div className="pillars__grid">
-          <Link to="/recipes" className="pillar pillar--food">
-            <div className="pillar__visual" />
-            <div className="pillar__copy">
-              <h3>Food stories</h3>
-              <p>Recipes, Soul Food, Street Food, and cooking competitions with gamified badges.</p>
-            </div>
-          </Link>
-          <Link to="/moves" className="pillar pillar--dance">
-            <div className="pillar__visual" />
-            <div className="pillar__copy">
-              <h3>Dance energy</h3>
-              <p>Freestyle, battles, and creator challenges — built for global dance communities.</p>
-            </div>
-          </Link>
+        <div className="pillars__grid pillars__grid--video">
+          {COMMUNITY_PORTALS.map((portal) => (
+            <VideoPortal key={portal.id} {...portal} className="video-portal--pillar" />
+          ))}
         </div>
       </section>
 
-      <section className="cta-band">
+      <section className="cta-band cta-band--motion">
+        <div className="cta-band__mascots" aria-hidden="true">
+          <MascotCharacter type="duo" size="sm" />
+        </div>
         <div className="cta-band__stamp" aria-hidden="true">
           Good food
           <br />

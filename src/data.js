@@ -2,8 +2,8 @@ export const NAV = [
   { label: 'Home', path: '/' },
   { label: 'Feed', path: '/feed', auth: true },
   { label: 'Discover', path: '/discover' },
-  { label: 'Recipes', path: '/recipes' },
-  { label: 'Moves', path: '/moves' },
+  { label: 'Recipes', path: '/recipes', navVideo: 'cooking' },
+  { label: 'Moves', path: '/moves', navVideo: 'dance' },
   { label: 'Community', path: '/community' },
   { label: 'Challenges', path: '/challenges' },
 ]
@@ -19,26 +19,34 @@ export const FEATURES = [
   {
     title: 'Discover',
     text: 'Explore recipes and dance styles from around the world.',
-    accent: 'food',
+    accent: 'fusion',
     to: '/discover',
   },
   {
     title: 'Create',
     text: 'Share dishes, choreography, and the story behind both.',
-    accent: 'dance',
+    accent: 'food',
     to: '/recipes',
   },
   {
     title: 'Connect',
-    text: 'Join food lovers and dancers in one vibrant community.',
-    accent: 'food',
+    text: 'Join food lovers and dancers in structured communities.',
+    accent: 'fusion',
     to: '/community',
   },
   {
-    title: 'Challenge',
-    text: 'Cook-offs, dance battles, and weekly creator challenges.',
+    title: 'Cook-off',
+    text: 'Recipe battles, chef badges, and kitchen competitions.',
+    accent: 'food',
+    to: '/challenges?tab=cooking',
+    mascot: 'chef',
+  },
+  {
+    title: 'Battle',
+    text: 'Dance battles, freestyle drops, and movement challenges.',
     accent: 'dance',
-    to: '/challenges',
+    to: '/challenges?tab=dance',
+    mascot: 'dancer',
   },
 ]
 

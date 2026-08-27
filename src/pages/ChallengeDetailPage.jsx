@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import ChallengeMascotPanel, { challengeCategory } from '../components/ChallengeMascotPanel'
 import ChallengeSubmissionRow from '../components/ChallengeSubmissionRow'
 import DetailBreadcrumb from '../components/DetailBreadcrumb'
 import { Skeleton } from '../components/Skeleton'
@@ -22,6 +23,7 @@ export default function ChallengeDetailPage() {
   const [entering, setEntering] = useState(false)
   const [submittingId, setSubmittingId] = useState(null)
   const [votingId, setVotingId] = useState(null)
+  const [mascotPhase, setMascotPhase] = useState('idle')
 
   function loadDetail() {
     return api.getChallenge(id).then((data) => {
@@ -40,11 +42,13 @@ export default function ChallengeDetailPage() {
   async function handleEnter() {
     if (!isAuthenticated) return navigate('/join')
     setEntering(true)
+    setMascotPhase('entering')
     try {
       const data = await api.enterChallenge(id)
       setMessage(data.message)
       await loadDetail()
       await refresh()
+      setMascotPhase('idle')
     } catch (err) {
       setMessage(err.message)
     } finally {
@@ -120,7 +124,11 @@ export default function ChallengeDetailPage() {
           />
 
           <div className="detail__head">
+            <ChallengeMascotPanel challenge={challenge} phase={entering ? 'entering' : mascotPhase} />
             <div className="challenge-detail__tags">
+              <span className={`tag ${challengeCategory(challenge.type) === 'cooking' ? 'tag--food' : challengeCategory(challenge.type) === 'dance' ? 'tag--dance' : 'tag--fusion'}`}>
+                {challengeCategory(challenge.type) === 'cooking' ? 'Cooking battle' : challengeCategory(challenge.type) === 'dance' ? 'Dance battle' : 'Fusion challenge'}
+              </span>
               <span className="tag">{challenge.type}</span>
               <span className={`tag ${isClosed ? 'tag--muted' : 'tag--food'}`}>
                 {isClosed ? 'Closed' : 'Active'}

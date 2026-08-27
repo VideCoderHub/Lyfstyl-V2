@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import FormCoach, { useFormCoach } from './FormCoach'
 import { useAuth } from '../context/AuthContext'
 import SocialAuthModal from './SocialAuthModal'
 import { SOCIAL_PROVIDERS } from './SocialIcons'
@@ -40,8 +41,19 @@ export default function AuthForm({
   const [interests, setInterests] = useState({ food: true, dance: true, both: false })
   const [socialProvider, setSocialProvider] = useState(null)
   const [avatarStyle, setAvatarStyle] = useState('chef')
+  const joinCoach = useFormCoach({ mode: 'join', interests })
+  const avatarCoach = useFormCoach({ mode: 'avatar', interests, avatarStyle })
+
+  function fieldCoachProps(name, coach) {
+    return {
+      onFocus: () => coach.onFocusField(name),
+      onChange: (e) => coach.trackField(name, e.target.value),
+    }
+  }
 
   function toggleInterest(key) {
+    joinCoach.onFocusField('interests')
+    avatarCoach.onFocusField('interests')
     if (key === 'both') {
       setInterests({ food: true, dance: true, both: true })
       return
@@ -157,18 +169,11 @@ export default function AuthForm({
 
   if (showAvatarStep) {
     return (
-      <main className="auth-page auth-page--join auth-page--avatar">
-        <div className="auth-page__media" aria-hidden="true">
+      <main className="auth-page auth-page--join auth-page--avatar auth-page--coach">
+        <div className="auth-page__media auth-page__media--coach">
           <div className="auth-page__panel auth-page__panel--join" />
           <div className="auth-page__veil" />
-          <div className="auth-page__quote auth-page__quote--join">
-            <p className="auth-page__brand">Almost there</p>
-            <p>Pick a starter avatar and we&apos;ll tailor Discover to your interests.</p>
-            <ul className="auth-page__benefits">
-              <li><span>🎯</span> Feed tuned to food, dance, or both</li>
-              <li><span>🏅</span> Unlock your first creator badge</li>
-            </ul>
-          </div>
+          <FormCoach {...avatarCoach} />
         </div>
 
         <div className="auth-page__panel-form">
@@ -192,7 +197,10 @@ export default function AuthForm({
                       key={style.id}
                       type="button"
                       className={`avatar-card ${avatarStyle === style.id ? 'is-selected' : ''}`}
-                      onClick={() => setAvatarStyle(style.id)}
+                      onClick={() => {
+                        setAvatarStyle(style.id)
+                        avatarCoach.onFocusField('avatarStyle')
+                      }}
                       aria-pressed={avatarStyle === style.id}
                     >
                       <span className="avatar-card__emoji" aria-hidden="true">{style.emoji}</span>
@@ -208,11 +216,24 @@ export default function AuthForm({
                 <div className="field-row">
                   <label className="field">
                     <span>Age</span>
-                    <input type="number" name="age" min="13" max="100" defaultValue={user?.age ?? 25} required />
+                    <input
+                      type="number"
+                      name="age"
+                      min="13"
+                      max="100"
+                      defaultValue={user?.age ?? 25}
+                      required
+                      {...fieldCoachProps('age', avatarCoach)}
+                    />
                   </label>
                   <label className="field">
                     <span>Country</span>
-                    <select name="country" defaultValue={user?.country ?? 'Kenya'} required>
+                    <select
+                      name="country"
+                      defaultValue={user?.country ?? 'Kenya'}
+                      required
+                      {...fieldCoachProps('country', avatarCoach)}
+                    >
                       {COUNTRIES.map((country) => (
                         <option key={country} value={country}>{country}</option>
                       ))}
@@ -222,7 +243,12 @@ export default function AuthForm({
 
                 <label className="field">
                   <span>Language</span>
-                  <select name="language" defaultValue={user?.language ?? 'en'} required>
+                  <select
+                    name="language"
+                    defaultValue={user?.language ?? 'en'}
+                    required
+                    {...fieldCoachProps('language', avatarCoach)}
+                  >
                     {LANGUAGES.map((lang) => (
                       <option key={lang.value} value={lang.value}>{lang.label}</option>
                     ))}
@@ -232,27 +258,9 @@ export default function AuthForm({
                 <div className="interest-chips">
                   <span className="interest-chips__label">I&apos;m mostly here for</span>
                   <div className="interest-chips__row">
-                    <button
-                      type="button"
-                      className={`interest-chip ${interests.food && !interests.both ? 'is-active' : interests.both ? 'is-active' : ''}`}
-                      onClick={() => toggleInterest('food')}
-                    >
-                      🍜 Food
-                    </button>
-                    <button
-                      type="button"
-                      className={`interest-chip ${interests.dance && !interests.both ? 'is-active' : interests.both ? 'is-active' : ''}`}
-                      onClick={() => toggleInterest('dance')}
-                    >
-                      💃 Dance
-                    </button>
-                    <button
-                      type="button"
-                      className={`interest-chip ${interests.both ? 'is-active' : ''}`}
-                      onClick={() => toggleInterest('both')}
-                    >
-                      ✨ Both
-                    </button>
+                    <button type="button" className={`interest-chip ${interests.food && !interests.both ? 'is-active' : interests.both ? 'is-active' : ''}`} onClick={() => toggleInterest('food')}>🍜 Food</button>
+                    <button type="button" className={`interest-chip ${interests.dance && !interests.both ? 'is-active' : interests.both ? 'is-active' : ''}`} onClick={() => toggleInterest('dance')}>💃 Dance</button>
+                    <button type="button" className={`interest-chip ${interests.both ? 'is-active' : ''}`} onClick={() => toggleInterest('both')}>✨ Both</button>
                   </div>
                 </div>
               </div>
@@ -271,27 +279,18 @@ export default function AuthForm({
   }
 
   return (
-    <main className={`auth-page ${isJoin ? 'auth-page--join' : ''}`}>
-      <div className="auth-page__media" aria-hidden="true">
+    <main className={`auth-page ${isJoin ? 'auth-page--join auth-page--coach' : ''}`}>
+      <div className={`auth-page__media ${isJoin ? 'auth-page__media--coach' : ''}`} aria-hidden={!isJoin}>
         <div className={`auth-page__panel auth-page__panel--${isJoin ? 'join' : 'login'}`} />
         <div className="auth-page__veil" />
-        <div className={`auth-page__quote ${isJoin ? 'auth-page__quote--join' : ''}`}>
-          <p className="auth-page__brand">Lyfstyl</p>
-          <p>{isJoin ? 'Join creators sharing flavour and footwork worldwide.' : 'Where flavour meets movement.'}</p>
-          {isJoin && benefits.length ? (
-            <ul className="auth-page__benefits">
-              {benefits.map((item) => (
-                <li key={item.title}>
-                  <span aria-hidden="true">{item.icon}</span>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <p>{item.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
+        {isJoin ? (
+          <FormCoach {...joinCoach} />
+        ) : (
+          <div className="auth-page__quote">
+            <p className="auth-page__brand">Lyfstyl</p>
+            <p>Where flavour meets movement.</p>
+          </div>
+        )}
       </div>
 
       <div className="auth-page__panel-form">
@@ -339,17 +338,32 @@ export default function AuthForm({
                   <span className="auth-form__section-label">About you</span>
                   <label className="field">
                     <span>Full name</span>
-                    <input type="text" name="name" placeholder="Alex Rivera" autoComplete="name" required />
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Alex Rivera"
+                      autoComplete="name"
+                      required
+                      {...fieldCoachProps('name', joinCoach)}
+                    />
                   </label>
 
                   <div className="field-row">
                     <label className="field">
                       <span>Age</span>
-                      <input type="number" name="age" min="13" max="100" placeholder="25" required />
+                      <input
+                        type="number"
+                        name="age"
+                        min="13"
+                        max="100"
+                        placeholder="25"
+                        required
+                        {...fieldCoachProps('age', joinCoach)}
+                      />
                     </label>
                     <label className="field">
                       <span>Country</span>
-                      <select name="country" defaultValue="Kenya" required>
+                      <select name="country" defaultValue="Kenya" required {...fieldCoachProps('country', joinCoach)}>
                         {COUNTRIES.map((country) => (
                           <option key={country} value={country}>{country}</option>
                         ))}
@@ -359,7 +373,7 @@ export default function AuthForm({
 
                   <label className="field">
                     <span>Language</span>
-                    <select name="language" defaultValue="en" required>
+                    <select name="language" defaultValue="en" required {...fieldCoachProps('language', joinCoach)}>
                       {LANGUAGES.map((lang) => (
                         <option key={lang.value} value={lang.value}>{lang.label}</option>
                       ))}
@@ -380,6 +394,7 @@ export default function AuthForm({
                 placeholder="you@email.com"
                 autoComplete="email"
                 required
+                {...(isJoin ? fieldCoachProps('email', joinCoach) : {})}
               />
             </label>
 
@@ -393,6 +408,7 @@ export default function AuthForm({
                   autoComplete={isJoin ? 'new-password' : 'current-password'}
                   required
                   minLength={6}
+                  {...(isJoin ? fieldCoachProps('password', joinCoach) : {})}
                 />
                 <button
                   type="button"
