@@ -1,11 +1,10 @@
 export const NAV = [
-  { label: 'Home', path: '/' },
-  { label: 'Feed', path: '/feed', auth: true },
-  { label: 'Discover', path: '/discover' },
-  { label: 'Recipes', path: '/recipes', navVideo: 'cooking' },
-  { label: 'Moves', path: '/moves', navVideo: 'dance' },
-  { label: 'Community', path: '/community' },
-  { label: 'Challenges', path: '/challenges' },
+  { label: 'Discover', path: '/discover', group: 'explore' },
+  { label: 'Recipes', path: '/recipes', group: 'create', accent: 'food' },
+  { label: 'Moves', path: '/moves', group: 'create', accent: 'dance' },
+  { label: 'Community', path: '/community', group: 'social' },
+  { label: 'Challenges', path: '/challenges', group: 'social' },
+  { label: 'Feed', path: '/feed', auth: true, group: 'social' },
 ]
 
 export const FOOTER_LINKS = [

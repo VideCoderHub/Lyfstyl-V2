@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { FOOTER_LINKS, NAV } from '../data'
-import { LOOP_VIDEOS } from '../data/media'
+import NavLinks from './NavLinks'
 import NotificationBell from './NotificationBell'
-import VideoPortal from './VideoPortal'
 import { useAuth } from '../context/AuthContext'
-
-const NAV_VIDEOS = {
-  cooking: LOOP_VIDEOS.cooking,
-  dance: LOOP_VIDEOS.dance,
-}
 
 function userInitials(name) {
   if (!name) return '?'
@@ -26,6 +20,8 @@ export default function Layout() {
   const { user, logout, message, setMessage, isAuthenticated } = useAuth()
   const isHome = location.pathname === '/'
   const isAuth = location.pathname === '/login' || location.pathname === '/join'
+
+  const navItems = NAV.filter((item) => !item.auth || isAuthenticated)
 
   useEffect(() => {
     setMenuOpen(false)
@@ -70,6 +66,10 @@ export default function Layout() {
     navigate('/')
   }
 
+  function closeMenu() {
+    setMenuOpen(false)
+  }
+
   return (
     <div className="page">
       {message ? (
@@ -92,7 +92,7 @@ export default function Layout() {
           type="button"
           className="nav__overlay"
           aria-label="Close menu"
-          onClick={() => setMenuOpen(false)}
+          onClick={closeMenu}
         />
       ) : null}
 
@@ -112,51 +112,26 @@ export default function Layout() {
           className={`nav__links ${menuOpen ? 'is-open' : ''}`}
           aria-label="Primary"
         >
-          {NAV.filter((item) => !item.auth || isAuthenticated).map((item) =>
-            item.navVideo ? (
-              <VideoPortal
-                key={item.path}
-                to={item.path}
-                video={NAV_VIDEOS[item.navVideo]}
-                title={item.label}
-                accent={item.navVideo === 'dance' ? 'dance' : 'food'}
-                compact
-                className="nav__video-portal"
-              />
-            ) : (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) => (isActive ? 'is-active' : undefined)}
-                end={item.path === '/'}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            ),
-          )}
+          <NavLinks items={navItems} onNavigate={closeMenu} />
         </nav>
 
         <div className="nav__actions">
           {isAuthenticated ? (
             <>
               <NotificationBell />
-              <Link to="/create" className="btn btn--ghost nav__create">
+              <Link to="/create" className="btn btn--primary nav__create-btn">
                 Create
               </Link>
-              <Link to="/messages" className="btn btn--ghost nav__messages">
+              <Link to="/messages" className="btn btn--ghost nav__messages" title="Messages">
                 Messages
               </Link>
-              <Link to="/dashboard" className="btn btn--ghost">
-                Dashboard
-              </Link>
-              <Link to="/profile" className="nav__user-link">
+              <Link to="/profile" className="nav__user-link" title="Your profile">
                 <span className="nav__user-avatar" aria-hidden="true">
                   {userInitials(user?.name)}
                 </span>
-                {user.name?.split(' ')[0]}
+                <span className="nav__user-name">{user.name?.split(' ')[0]}</span>
               </Link>
-              <button type="button" className="btn btn--ghost" onClick={handleLogout}>
+              <button type="button" className="btn btn--ghost nav__logout" onClick={handleLogout}>
                 Log out
               </button>
             </>
