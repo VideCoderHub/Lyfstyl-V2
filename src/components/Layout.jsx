@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { FOOTER_LINKS, NAV } from '../data'
+import LandingNav from './LandingNav'
 import NavLinks from './NavLinks'
 import NotificationBell from './NotificationBell'
 import { useAuth } from '../context/AuthContext'
@@ -96,7 +97,7 @@ export default function Layout() {
         />
       ) : null}
 
-      <header className={`nav ${scrolled || !isHome || isAuth ? 'nav--solid' : ''}`}>
+      <header className={`nav ${scrolled || !isHome || isAuth ? 'nav--solid' : ''} ${isHome ? 'nav--landing' : ''}`}>
         <Link className="brand" to="/" aria-label="Lyfstyl home">
           <span className="brand__mark" aria-hidden="true">
             <svg viewBox="0 0 36 36" fill="none">
@@ -105,18 +106,39 @@ export default function Layout() {
               <path d="M14 14c2.5 1.5 5.5 1.5 8 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="brand__name">Lyfstyl</span>
+          <span className="brand__name">
+            L<span className="brand__accent">y</span>fstyl
+          </span>
         </Link>
 
         <nav
           className={`nav__links ${menuOpen ? 'is-open' : ''}`}
           aria-label="Primary"
         >
-          <NavLinks items={navItems} onNavigate={closeMenu} />
+          {isHome ? (
+            <LandingNav onNavigate={closeMenu} />
+          ) : (
+            <NavLinks items={navItems} onNavigate={closeMenu} />
+          )}
         </nav>
 
         <div className="nav__actions">
-          {isAuthenticated ? (
+          {isHome && !isAuthenticated ? (
+            <>
+              <Link to="/discover" className="nav__search" aria-label="Search" title="Search">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                  <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </Link>
+              <Link to="/login" className="btn btn--ghost nav__login">
+                Log in
+              </Link>
+              <Link to="/join" className="btn btn--brand nav__join">
+                Join Lyfstyl
+              </Link>
+            </>
+          ) : isAuthenticated ? (
             <>
               <NotificationBell />
               <Link to="/create" className="btn btn--primary nav__create-btn">
@@ -184,12 +206,18 @@ export default function Layout() {
             </ul>
           </div>
           <div>
-            <p className="footer__label">Communities</p>
+            <p className="footer__label">Food</p>
             <ul className="footer__links">
+              <li><Link to="/community?tab=food">All food communities</Link></li>
               <li><Link to="/community/street-food">Street Food</Link></li>
-              <li><Link to="/community/hip-hop">Hip-hop</Link></li>
               <li><Link to="/community/soul-food">Soul Food</Link></li>
-              <li><Link to="/community/battle">Battle</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="footer__label">Entertainment</p>
+            <ul className="footer__links">
+              <li><Link to="/community?tab=entertainment">Entertainment hub</Link></li>
+              <li><Link to="/community/dance">Dance</Link></li>
             </ul>
           </div>
         </div>

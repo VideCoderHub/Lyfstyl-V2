@@ -186,10 +186,39 @@ export function getCommunityDetail(slug, userId) {
   if (!row) return null
 
   const community = formatCommunity(row, userId)
+  let feed = getCommunityFeed(row.id, userId)
+
+  if (slug === 'dance') {
+    const danceRows = tables.find('communities', { vertical: 'dance' }).filter((c) => c.slug !== 'dance')
+    const danceIds = danceRows.map((c) => c.id)
+
+    feed = {
+      ...feed,
+      moves: tables
+        .find('moves')
+        .filter((m) => danceIds.includes(m.community_id))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 12)
+        .map((m) => formatMove(m, userId)),
+      challenges: tables
+        .find('challenges')
+        .filter((c) => danceIds.includes(c.community_id))
+        .map((c) => formatChallengeRow(c, userId))
+        .filter((c) => c.status === 'active')
+        .slice(0, 6),
+    }
+
+    community.moveCount = tables.find('moves').filter((m) => danceIds.includes(m.community_id)).length
+    community.challengeCount = tables.find('challenges').filter((c) => danceIds.includes(c.community_id)).length
+    community.memberCount = danceRows.reduce(
+      (sum, danceRow) => sum + countCommunityMembers(danceRow.id),
+      countCommunityMembers(row.id),
+    )
+  }
 
   return {
     community,
-    feed: getCommunityFeed(row.id, userId),
+    feed,
     members: getCommunityMembers(row.id),
     topCreators: getTopCreators(row.id),
     posts: getCommunityPosts(row.id),

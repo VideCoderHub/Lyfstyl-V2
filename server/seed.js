@@ -21,6 +21,7 @@ const COMMUNITIES = [
   { slug: 'street-food', name: 'Street Food', category: 'food', vertical: 'food', description: 'Market stalls, late-night bites, and urban flavours.' },
   { slug: 'fast-food', name: 'Fast Food', category: 'food', vertical: 'food', description: 'Quick plates and weeknight wins.' },
   { slug: 'snacks', name: 'Snacks', category: 'food', vertical: 'food', description: 'Small bites, treats, and shareable plates.' },
+  { slug: 'dance', name: 'Dance', category: 'dance', vertical: 'dance', description: 'Move. Express. Inspire. — the home for battles, cyphers, and creative movement.' },
   { slug: 'freestyle', name: 'Freestyle', category: 'dance', vertical: 'dance', description: 'Open movement and creative expression.' },
   { slug: 'hip-hop', name: 'Hip-hop', category: 'dance', vertical: 'dance', description: 'Grooves, battles, and street energy.' },
   { slug: 'house', name: 'House', category: 'dance', vertical: 'dance', description: 'Footwork, glide, and club culture.' },
@@ -118,6 +119,17 @@ const MOVE_EXTRAS = {
 }
 
 export function upgradeContent() {
+  if (!tables.findOne('communities', { slug: 'dance' })) {
+    tables.insert('communities', {
+      slug: 'dance',
+      name: 'Dance',
+      category: 'dance',
+      vertical: 'dance',
+      description: 'Move. Express. Inspire. — the home for battles, cyphers, and creative movement.',
+      member_count: 8900,
+    })
+  }
+
   for (const recipe of tables.find('recipes')) {
     const extra = RECIPE_EXTRAS[recipe.title]
     if (!recipe.description && extra) {

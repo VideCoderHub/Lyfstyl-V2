@@ -12,19 +12,19 @@ export const LOOP_VIDEOS = {
 
 export const COMMUNITY_PORTALS = [
   {
-    id: 'recipes',
+    id: 'food',
     title: 'Food communities',
-    subtitle: 'Recipes, cook-offs & kitchen culture',
-    to: '/recipes',
+    subtitle: 'Street food, soul food & dedicated kitchens',
+    to: '/community?tab=food',
     video: LOOP_VIDEOS.cooking,
     accent: 'food',
     mascot: 'chef',
   },
   {
-    id: 'moves',
-    title: 'Dance communities',
-    subtitle: 'Battles, freestyle & movement',
-    to: '/moves',
+    id: 'entertainment',
+    title: 'Entertainment',
+    subtitle: 'Dance is live — more coming soon',
+    to: '/community?tab=entertainment',
     video: LOOP_VIDEOS.dance,
     accent: 'dance',
     mascot: 'dancer',

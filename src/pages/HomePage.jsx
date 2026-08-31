@@ -1,173 +1,184 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import MascotCharacter from '../components/MascotCharacter'
-import MediaCard from '../components/MediaCard'
-import VideoPortal from '../components/VideoPortal'
+import LandingActivityTicker from '../components/LandingActivityTicker'
+import { PillarCard } from '../components/LandingPillars'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { FEATURES } from '../data'
-import { COMMUNITY_PORTALS, LOOP_VIDEOS } from '../data/media'
-import { FEATURE_ICONS } from '../components/Icons'
+import { useCountUp } from '../hooks/useCountUp'
+import { useScrollReveal } from '../hooks/useScrollReveal'
+import { COMMUNITY_FEATURES, LANDING_HERO } from '../data/communities'
+import { LOOP_VIDEOS } from '../data/media'
+
+function StatItem({ value, label, active }) {
+  const display = useCountUp(value, { active })
+  return (
+    <div className="landing-stat">
+      <strong>{display}</strong>
+      <span>{label}</span>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth()
+  const heroRef = useRef(null)
+  const [heroOffset, setHeroOffset] = useState({ x: 0, y: 0 })
   const [stats, setStats] = useState([
     { value: '40K+', label: 'Creators' },
-    { value: '18K+', label: 'Recipes Shared' },
-    { value: '12K+', label: 'Dance Clips' },
+    { value: '18K+', label: 'Recipes' },
+    { value: '12K+', label: 'Dance clips' },
     { value: '90+', label: 'Countries' },
   ])
-  const [recommendations, setRecommendations] = useState([])
+  const [heroReady, setHeroReady] = useState(false)
+  const [pillarsRef, pillarsVisible] = useScrollReveal({ threshold: 0.08 })
+  const [valuesRef, valuesVisible] = useScrollReveal({ threshold: 0.2 })
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setHeroReady(true), 80)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     api.getStats().then((data) => {
       const s = data.stats
       setStats([
         { value: s.creators, label: 'Creators' },
-        { value: s.recipesShared, label: 'Recipes Shared' },
-        { value: s.danceClips, label: 'Dance Clips' },
+        { value: s.recipesShared, label: 'Recipes' },
+        { value: s.danceClips, label: 'Dance clips' },
         { value: s.countries, label: 'Countries' },
       ])
     }).catch(() => {})
-    api.getRecommendations().then((data) => setRecommendations(data.items?.slice(0, 4) ?? [])).catch(() => {})
-  }, [isAuthenticated])
+  }, [])
+
+  const onHeroMove = useCallback((event) => {
+    const node = heroRef.current
+    if (!node || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const rect = node.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width - 0.5
+    const y = (event.clientY - rect.top) / rect.height - 0.5
+    setHeroOffset({ x: x * 18, y: y * 10 })
+  }, [])
+
+  function scrollToPillars(target) {
+    const el = document.getElementById('landing-pillars')
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (target) {
+      window.setTimeout(() => {
+        document.getElementById(`pillar-${target}`)?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' })
+      }, 400)
+    }
+  }
 
   return (
-    <main>
-      <section className="hero hero--motion">
-        <div className="hero__media" aria-hidden="true">
-          <video className="hero__video hero__video--food" autoPlay muted loop playsInline>
-            <source src={LOOP_VIDEOS.kitchen} type="video/mp4" />
-          </video>
-          <video className="hero__video hero__video--dance" autoPlay muted loop playsInline>
-            <source src={LOOP_VIDEOS.dance} type="video/mp4" />
-          </video>
-          <div className="hero__panel hero__panel--food" />
-          <div className="hero__panel hero__panel--dance" />
-          <div className="hero__veil" />
-          <div className="hero__mascots">
-            <MascotCharacter type="chef" size="sm" />
-            <MascotCharacter type="dancer" size="sm" />
+    <main className="landing">
+      <section
+        ref={heroRef}
+        className={`landing-hero ${heroReady ? 'is-ready' : ''}`}
+        onMouseMove={onHeroMove}
+      >
+        <div
+          className="landing-hero__scene"
+          aria-hidden="true"
+          style={{ transform: `translate3d(${heroOffset.x * 0.35}px, ${heroOffset.y * 0.35}px, 0)` }}
+        >
+          <div className="landing-hero__panel landing-hero__panel--left">
+            <video autoPlay muted loop playsInline poster={LANDING_HERO.left}>
+              <source src={LOOP_VIDEOS.kitchen} type="video/mp4" />
+            </video>
+            <img src={LANDING_HERO.left} alt="" className="landing-hero__fallback" />
+          </div>
+          <div className="landing-hero__panel landing-hero__panel--right">
+            <video autoPlay muted loop playsInline poster={LANDING_HERO.right}>
+              <source src={LOOP_VIDEOS.dance} type="video/mp4" />
+            </video>
+            <img src={LANDING_HERO.right} alt="" className="landing-hero__fallback" />
+          </div>
+          <div className="landing-hero__orbs">
+            <span className="landing-hero__orb landing-hero__orb--brand" />
+            <span className="landing-hero__orb landing-hero__orb--food" />
+            <span className="landing-hero__orb landing-hero__orb--ent" />
+          </div>
+          <div className="landing-hero__veil" />
+        </div>
+
+        <div
+          className="landing-hero__content"
+          style={{ transform: `translate3d(${heroOffset.x * -0.15}px, ${heroOffset.y * -0.15}px, 0)` }}
+        >
+          <LandingActivityTicker />
+          <h1 className="landing-hero__line landing-hero__line--1">Welcome to Lyfstyl</h1>
+          <p className="landing-hero__gradient landing-hero__line landing-hero__line--2">
+            Your lifestyle. Your communities. Your way.
+          </p>
+          <p className="landing-hero__lede landing-hero__line landing-hero__line--3">
+            Join communities that inspire you. Explore. Connect. Share.
+          </p>
+          <div className="landing-hero__cta landing-hero__line landing-hero__line--4">
+            <Link className="btn btn--brand btn--lg landing-btn-pulse" to={isAuthenticated ? '/dashboard' : '/join'}>
+              {isAuthenticated ? 'Go to dashboard' : 'Join Lyfstyl!'}
+            </Link>
+            <button type="button" className="btn btn--outline btn--outline-light btn--lg" onClick={() => scrollToPillars()}>
+              Explore Communities
+            </button>
+          </div>
+          <div className="landing-hero__pills landing-hero__line landing-hero__line--5">
+            <button type="button" className="landing-hero__pill landing-hero__pill--food" onClick={() => scrollToPillars('food')}>
+              <span aria-hidden="true">🍴</span> Food
+            </button>
+            <button type="button" className="landing-hero__pill landing-hero__pill--ent" onClick={() => scrollToPillars('entertainment')}>
+              <span aria-hidden="true">💃</span> Entertainment
+            </button>
           </div>
         </div>
 
-        <div className="hero__content">
-          <p className="hero__brand">Lyfstyl</p>
-          <h1 className="hero__title">
-            Where flavour meets <em>movement</em>
-          </h1>
-          <p className="hero__lede">
-            Two worlds, one platform — tap a cooking or dance portal below and jump into structured communities.
-          </p>
-          <div className="hero__cta">
-            <Link className="btn btn--primary btn--lg" to={isAuthenticated ? '/dashboard' : '/join'}>
-              {isAuthenticated ? 'Go to dashboard' : 'Join the Community'}
-              <span aria-hidden="true">→</span>
-            </Link>
-            <Link className="btn btn--outline btn--lg" to="/discover">
-              <span className="play" aria-hidden="true" />
-              Explore feed
-            </Link>
-          </div>
-        </div>
+        <button type="button" className="landing-hero__scroll" onClick={() => scrollToPillars()} aria-label="Scroll to communities">
+          <span className="landing-hero__scroll-icon" aria-hidden="true" />
+        </button>
       </section>
 
-      <section className="portal-strip" aria-label="Community portals">
-        <div className="portal-strip__inner">
-          {COMMUNITY_PORTALS.map((portal) => (
-            <VideoPortal key={portal.id} {...portal} />
+      <section className="landing-stats landing-stats--live" aria-label="Platform stats">
+        <div className="content-wrap landing-stats__inner">
+          {stats.map((stat) => (
+            <StatItem key={stat.label} value={stat.value} label={stat.label} active={heroReady} />
           ))}
         </div>
       </section>
 
-      <section className="features features--motion" aria-label="Platform features">
-        <div className="features__rail">
-          {FEATURES.map((feature) => {
-            const Icon = FEATURE_ICONS[feature.title]
-            return (
-              <Link
-                key={feature.title}
-                to={feature.to}
-                className={`feature feature--${feature.accent}`}
-              >
-                {feature.mascot ? (
-                  <div className="feature__mascot">
-                    <MascotCharacter type={feature.mascot} size="sm" animate />
-                  </div>
-                ) : (
-                  <div className="feature__icon">{Icon ? <Icon /> : null}</div>
-                )}
-                <h2>{feature.title}</h2>
-                <p>{feature.text}</p>
-              </Link>
-            )
-          })}
+      <section
+        id="landing-pillars"
+        ref={pillarsRef}
+        className={`landing-pillars-wrap ${pillarsVisible ? 'is-visible' : ''}`}
+        aria-labelledby="landing-pillars-title"
+      >
+        <div className="content-wrap">
+          <div className="landing-pillars__head landing-reveal">
+            <h2 id="landing-pillars-title">Explore Top Communities</h2>
+          </div>
+
+          <div className="landing-pillars__grid">
+            <PillarCard variant="food" visible={pillarsVisible} delay={0} />
+            <PillarCard variant="entertainment" visible={pillarsVisible} delay={1} />
+          </div>
         </div>
       </section>
 
-      <section className="stats stats--pulse" aria-label="Community stats">
-        <div className="stats__inner">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat">
-              <strong>{stat.value}</strong>
-              <span>{stat.label}</span>
+      <section
+        ref={valuesRef}
+        className={`landing-values ${valuesVisible ? 'is-visible' : ''}`}
+        aria-label="Why Lyfstyl"
+      >
+        <div className="content-wrap landing-values__inner">
+          {COMMUNITY_FEATURES.map((feature, index) => (
+            <div
+              key={feature.label}
+              className={`landing-values__item landing-values__item--${feature.accent} landing-reveal`}
+              style={{ '--reveal-delay': `${index * 0.08}s` }}
+            >
+              <span className="landing-values__icon" aria-hidden="true">{feature.icon}</span>
+              <span>{feature.label}</span>
             </div>
           ))}
         </div>
-      </section>
-
-      {recommendations.length ? (
-        <section className="content-wrap home-recs">
-          <div className="section-head">
-            <h2>Recommended for you</h2>
-            <p>Personalized picks from Lyfstyl communities — food, dance, and creators near you.</p>
-          </div>
-          <div className="card-grid card-grid--stagger">
-            {recommendations.map((item) => (
-              <MediaCard
-                key={`${item.id}-${item.title}`}
-                to={item.time ? `/recipes/${item.id}` : `/moves/${item.id}`}
-                image={item.image}
-                tag={item.time ? 'Recipe' : 'Move'}
-                tagClass={item.time ? 'tag--food' : 'tag--dance'}
-                title={item.title}
-                meta={item.time ? `${item.time} · ${item.level}` : `${item.style} · ${item.length}`}
-                portrait={!item.time}
-                play={!item.time}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="pillars pillars--video">
-        <div className="pillars__intro">
-          <h2>Food and dance — clearly separated, beautifully connected</h2>
-          <p>Tap a looping preview to enter the community you want. No more guessing which battle is which.</p>
-        </div>
-        <div className="pillars__grid pillars__grid--video">
-          {COMMUNITY_PORTALS.map((portal) => (
-            <VideoPortal key={portal.id} {...portal} className="video-portal--pillar" />
-          ))}
-        </div>
-      </section>
-
-      <section className="cta-band cta-band--motion">
-        <div className="cta-band__mascots" aria-hidden="true">
-          <MascotCharacter type="duo" size="sm" />
-        </div>
-        <div className="cta-band__stamp" aria-hidden="true">
-          Good food
-          <br />
-          Good moves
-          <br />
-          Great community
-        </div>
-        <h2>Ready to taste the rhythm?</h2>
-        <p>Free to join. Personalized by country, language, and passions.</p>
-        <Link className="btn btn--primary btn--lg" to="/join">
-          Sign up — it&apos;s free
-        </Link>
       </section>
     </main>
   )
