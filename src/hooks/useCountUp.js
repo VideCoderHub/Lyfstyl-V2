@@ -23,6 +23,10 @@ export function useCountUp(value, { duration = 1400, active = true } = {}) {
     }
 
     const { num, suffix, decimals } = parseStatValue(value)
+    if (num === 0 && !suffix) {
+      setDisplay('0')
+      return undefined
+    }
     if (!num) {
       setDisplay(String(value ?? ''))
       return undefined

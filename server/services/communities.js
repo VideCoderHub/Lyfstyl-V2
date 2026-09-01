@@ -6,10 +6,7 @@ import { formatChallengeRow } from './challenges.js'
 import { formatUserPublic } from './social.js'
 
 export function countCommunityMembers(communityId) {
-  const real = tables.count('user_communities', { community_id: communityId })
-  if (real > 0) return real
-  const row = tables.findOne('communities', { id: communityId })
-  return row?.member_count ?? 0
+  return tables.count('user_communities', { community_id: communityId })
 }
 
 export function isCommunityMember(userId, communityId) {
@@ -311,7 +308,7 @@ export function createCommunityPost(user, slug, body) {
 export function syncCommunityMemberCounts() {
   for (const community of tables.find('communities')) {
     const real = tables.count('user_communities', { community_id: community.id })
-    if (real > 0 && real !== community.member_count) {
+    if (real !== community.member_count) {
       tables.update('communities', { id: community.id }, { member_count: real })
     }
   }

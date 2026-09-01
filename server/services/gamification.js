@@ -61,19 +61,28 @@ export function getUserBadges(userId) {
 }
 
 export function getPlatformStats() {
-  const users = tables.count('users')
   const recipes = tables.count('recipes')
   const moves = tables.count('moves')
+  const users = tables.count('users')
+
+  const creatorIds = new Set()
+  for (const recipe of tables.find('recipes')) {
+    if (recipe.creator_id) creatorIds.add(recipe.creator_id)
+  }
+  for (const move of tables.find('moves')) {
+    if (move.creator_id) creatorIds.add(move.creator_id)
+  }
+
   const countries = new Set([
     ...tables.find('recipes').map((r) => r.country).filter(Boolean),
     ...tables.find('moves').map((m) => m.country).filter(Boolean),
     ...tables.find('users').map((u) => u.country).filter(Boolean),
-  ]).size
+  ])
 
   return {
-    creators: `${Math.max(users * 10, 40)}K+`,
-    recipesShared: `${Math.max(recipes * 2200, 18)}K+`,
-    danceClips: `${Math.max(moves * 1500, 12)}K+`,
-    countries: `${Math.max(countries, 90)}+`,
+    creators: Math.max(creatorIds.size, users),
+    recipesShared: recipes,
+    danceClips: moves,
+    countries: countries.size,
   }
 }

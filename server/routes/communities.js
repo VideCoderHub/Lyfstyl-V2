@@ -30,8 +30,8 @@ router.get('/', optionalAuth, (req, res) => {
   }
 
   communities.sort((a, b) => {
-    const membersA = tables.count('user_communities', { community_id: a.id }) || a.member_count
-    const membersB = tables.count('user_communities', { community_id: b.id }) || b.member_count
+    const membersA = tables.count('user_communities', { community_id: a.id })
+    const membersB = tables.count('user_communities', { community_id: b.id })
     return membersB - membersA || a.name.localeCompare(b.name)
   })
 

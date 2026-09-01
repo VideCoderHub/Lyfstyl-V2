@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PillarCard } from '../components/LandingPillars'
 import { api } from '../api/client'
@@ -8,8 +8,13 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { COMMUNITY_FEATURES, LANDING_HERO } from '../data/communities'
 import { LOOP_VIDEOS } from '../data/media'
 
+function normalizeStat(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : 0
+}
+
 function StatItem({ value, label, active }) {
-  const display = useCountUp(value, { active })
+  const display = useCountUp(value ?? 0, { active })
   return (
     <div className="landing-stat">
       <strong>{display}</strong>
@@ -23,6 +28,7 @@ export default function HomePage() {
   const heroRef = useRef(null)
   const [heroOffset, setHeroOffset] = useState({ x: 0, y: 0 })
   const [stats, setStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(true)
   const [communityMap, setCommunityMap] = useState({})
   const [heroReady, setHeroReady] = useState(false)
   const [pillarsRef, pillarsVisible] = useScrollReveal({ threshold: 0.08 })
@@ -34,24 +40,33 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
+    setStatsLoading(true)
     Promise.all([
       api.getStats(),
       api.getCommunities(),
     ])
       .then(([statsData, communitiesData]) => {
-        const s = statsData.stats
+        const s = statsData.stats ?? {}
         setStats([
-          { value: s.creators, label: 'Creators' },
-          { value: s.recipesShared, label: 'Recipes' },
-          { value: s.danceClips, label: 'Dance clips' },
-          { value: s.countries, label: 'Countries' },
+          { value: normalizeStat(s.creators), label: 'Creators' },
+          { value: normalizeStat(s.recipesShared), label: 'Recipes' },
+          { value: normalizeStat(s.danceClips), label: 'Dance clips' },
+          { value: normalizeStat(s.countries), label: 'Countries' },
         ])
         setCommunityMap(
           Object.fromEntries((communitiesData.communities ?? []).map((c) => [c.slug, c])),
         )
       })
-      .catch(() => {})
-  }, [])
+      .catch(() => {
+        setStats([
+          { value: 0, label: 'Creators' },
+          { value: 0, label: 'Recipes' },
+          { value: 0, label: 'Dance clips' },
+          { value: 0, label: 'Countries' },
+        ])
+      })
+      .finally(() => setStatsLoading(false))
+  }, [isAuthenticated])
 
   const onHeroMove = useCallback((event) => {
     const node = heroRef.current
@@ -71,8 +86,6 @@ export default function HomePage() {
       }, 400)
     }
   }
-
-  const hasStats = useMemo(() => stats?.some((stat) => stat.value), [stats])
 
   return (
     <main className="landing">
@@ -140,11 +153,11 @@ export default function HomePage() {
         </button>
       </section>
 
-      {hasStats ? (
-        <section className="landing-stats landing-stats--live" aria-label="Platform stats">
+      {stats ? (
+        <section className="landing-stats landing-stats--live" aria-label="Platform stats" aria-busy={statsLoading}>
           <div className="content-wrap landing-stats__inner">
             {stats.map((stat) => (
-              <StatItem key={stat.label} value={stat.value} label={stat.label} active={heroReady} />
+              <StatItem key={stat.label} value={stat.value} label={stat.label} active={heroReady && !statsLoading} />
             ))}
           </div>
         </section>

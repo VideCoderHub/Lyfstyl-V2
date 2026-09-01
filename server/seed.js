@@ -126,7 +126,7 @@ export function upgradeContent() {
       category: 'dance',
       vertical: 'dance',
       description: 'Move. Express. Inspire. — the home for battles, cyphers, and creative movement.',
-      member_count: 8900,
+      member_count: 0,
     })
   }
 
@@ -334,7 +334,7 @@ export function seedDatabase(force = false) {
   for (const community of COMMUNITIES) {
     tables.insert('communities', {
       ...community,
-      member_count: Math.floor(Math.random() * 4000) + 500,
+      member_count: 0,
     })
   }
 
