@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import LandingActivityTicker from '../components/LandingActivityTicker'
 import { PillarCard } from '../components/LandingPillars'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
@@ -23,12 +22,8 @@ export default function HomePage() {
   const { isAuthenticated } = useAuth()
   const heroRef = useRef(null)
   const [heroOffset, setHeroOffset] = useState({ x: 0, y: 0 })
-  const [stats, setStats] = useState([
-    { value: '40K+', label: 'Creators' },
-    { value: '18K+', label: 'Recipes' },
-    { value: '12K+', label: 'Dance clips' },
-    { value: '90+', label: 'Countries' },
-  ])
+  const [stats, setStats] = useState(null)
+  const [communityMap, setCommunityMap] = useState({})
   const [heroReady, setHeroReady] = useState(false)
   const [pillarsRef, pillarsVisible] = useScrollReveal({ threshold: 0.08 })
   const [valuesRef, valuesVisible] = useScrollReveal({ threshold: 0.2 })
@@ -39,15 +34,23 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    api.getStats().then((data) => {
-      const s = data.stats
-      setStats([
-        { value: s.creators, label: 'Creators' },
-        { value: s.recipesShared, label: 'Recipes' },
-        { value: s.danceClips, label: 'Dance clips' },
-        { value: s.countries, label: 'Countries' },
-      ])
-    }).catch(() => {})
+    Promise.all([
+      api.getStats(),
+      api.getCommunities(),
+    ])
+      .then(([statsData, communitiesData]) => {
+        const s = statsData.stats
+        setStats([
+          { value: s.creators, label: 'Creators' },
+          { value: s.recipesShared, label: 'Recipes' },
+          { value: s.danceClips, label: 'Dance clips' },
+          { value: s.countries, label: 'Countries' },
+        ])
+        setCommunityMap(
+          Object.fromEntries((communitiesData.communities ?? []).map((c) => [c.slug, c])),
+        )
+      })
+      .catch(() => {})
   }, [])
 
   const onHeroMove = useCallback((event) => {
@@ -68,6 +71,8 @@ export default function HomePage() {
       }, 400)
     }
   }
+
+  const hasStats = useMemo(() => stats?.some((stat) => stat.value), [stats])
 
   return (
     <main className="landing">
@@ -105,7 +110,6 @@ export default function HomePage() {
           className="landing-hero__content"
           style={{ transform: `translate3d(${heroOffset.x * -0.15}px, ${heroOffset.y * -0.15}px, 0)` }}
         >
-          <LandingActivityTicker />
           <h1 className="landing-hero__line landing-hero__line--1">Welcome to Lyfstyl</h1>
           <p className="landing-hero__gradient landing-hero__line landing-hero__line--2">
             Your lifestyle. Your communities. Your way.
@@ -136,13 +140,15 @@ export default function HomePage() {
         </button>
       </section>
 
-      <section className="landing-stats landing-stats--live" aria-label="Platform stats">
-        <div className="content-wrap landing-stats__inner">
-          {stats.map((stat) => (
-            <StatItem key={stat.label} value={stat.value} label={stat.label} active={heroReady} />
-          ))}
-        </div>
-      </section>
+      {hasStats ? (
+        <section className="landing-stats landing-stats--live" aria-label="Platform stats">
+          <div className="content-wrap landing-stats__inner">
+            {stats.map((stat) => (
+              <StatItem key={stat.label} value={stat.value} label={stat.label} active={heroReady} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section
         id="landing-pillars"
@@ -156,8 +162,8 @@ export default function HomePage() {
           </div>
 
           <div className="landing-pillars__grid">
-            <PillarCard variant="food" visible={pillarsVisible} delay={0} />
-            <PillarCard variant="entertainment" visible={pillarsVisible} delay={1} />
+            <PillarCard variant="food" visible={pillarsVisible} delay={0} communityMap={communityMap} />
+            <PillarCard variant="entertainment" visible={pillarsVisible} delay={1} communityMap={communityMap} />
           </div>
         </div>
       </section>

@@ -10,14 +10,13 @@ import {
   ENTERTAINMENT_HUB,
   FOOD_HUB,
   FOOD_LIVE_SLUGS,
+  formatMemberCount,
   PILLAR_TABS,
 } from '../data/communities'
 import { useAuth } from '../context/AuthContext'
 
 function formatMembers(count) {
-  if (!count) return ''
-  if (count >= 1000) return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K members`
-  return `${count} members`
+  return formatMemberCount(count) ?? ''
 }
 
 export default function CommunityPage() {
@@ -62,7 +61,7 @@ export default function CommunityPage() {
     api: communityMap[item.slug],
     membersLabel: communityMap[item.slug]
       ? formatMembers(communityMap[item.slug].memberCount)
-      : item.membersLabel,
+      : '',
   }))
 
   const danceHub = communityMap[DANCE_HUB_SLUG]

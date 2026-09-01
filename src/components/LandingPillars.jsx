@@ -1,15 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { HOME_PILLARS } from '../data/communities'
+import { enrichSubcommunity, HOME_PILLARS } from '../data/communities'
 
 function SubCommunityCard({ item, variant, index, visible }) {
-  const [soonMsg, setSoonMsg] = useState(false)
-
-  function handleSoonClick() {
-    setSoonMsg(true)
-    window.setTimeout(() => setSoonMsg(false), 2800)
-  }
-
   const inner = (
     <>
       <div className="landing-sub__media">
@@ -17,7 +10,6 @@ function SubCommunityCard({ item, variant, index, visible }) {
         {item.comingSoon ? (
           <span className="landing-sub__soon">
             <span className="landing-sub__soon-label">Coming Soon</span>
-            {soonMsg ? <span className="landing-sub__soon-toast">We&apos;ll notify you!</span> : null}
           </span>
         ) : null}
         {item.live ? <span className="landing-sub__live"><span /> Live</span> : null}
@@ -55,14 +47,15 @@ function SubCommunityCard({ item, variant, index, visible }) {
   }
 
   return (
-    <button type="button" className={`${className} landing-sub--btn`} style={style} onClick={handleSoonClick}>
+    <article className={className} style={style} aria-disabled="true">
       {inner}
-    </button>
+    </article>
   )
 }
 
-function PillarCard({ variant, visible, delay = 0 }) {
+function PillarCard({ variant, visible, delay = 0, communityMap = {} }) {
   const config = HOME_PILLARS[variant]
+  const subcommunities = config.subcommunities.map((item) => enrichSubcommunity(item, communityMap))
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
 
   function onMove(event) {
@@ -108,7 +101,7 @@ function PillarCard({ variant, visible, delay = 0 }) {
       <div className="landing-pillar__subs">
         <p className="landing-pillar__subs-label">Top sub-communities</p>
         <div className="landing-pillar__subs-grid">
-          {config.subcommunities.map((item, index) => (
+          {subcommunities.map((item, index) => (
             <SubCommunityCard
               key={item.slug ?? item.id}
               item={item}

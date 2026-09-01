@@ -9,6 +9,22 @@ export const DANCE_HUB_SLUG = 'dance'
 export const FOOD_LIVE_SLUGS = ['street-food', 'soul-food']
 export const DANCE_STYLE_SLUGS = ['hip-hop', 'battle', 'house', 'freestyle', 'contemporary', 'social-dance']
 
+export function formatMemberCount(count) {
+  if (!count) return null
+  if (count >= 1000) return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K members`
+  return `${count} member${count === 1 ? '' : 's'}`
+}
+
+export function enrichSubcommunity(item, communityMap) {
+  if (!item.slug || !communityMap[item.slug]) return item
+  const community = communityMap[item.slug]
+  return {
+    ...item,
+    description: community.description || item.description,
+    membersLabel: formatMemberCount(community.memberCount),
+  }
+}
+
 export const ENTERTAINMENT_HUB = {
   eyebrow: 'Entertainment Community',
   title: 'Entertainment & Dance',
@@ -83,7 +99,6 @@ export const FOOD_HUB = {
       description: 'Market stalls, late-night bites, and urban flavours from every corner.',
       image:
         'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=900&q=80',
-      membersLabel: '12.4K members',
     },
     {
       slug: 'soul-food',
@@ -92,7 +107,6 @@ export const FOOD_HUB = {
       description: 'Celebrate rich traditions, bold flavors and timeless recipes that bring people together.',
       image:
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-      membersLabel: '8.7K members',
     },
   ],
   comingSoon: [
@@ -143,7 +157,6 @@ export const HOME_PILLARS = {
         description: 'Local bites, big flavor.',
         icon: '🌮',
         image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=600&q=80',
-        membersLabel: '12.4K members',
         to: '/community/street-food',
         live: true,
       },
@@ -153,7 +166,6 @@ export const HOME_PILLARS = {
         description: 'Comfort classics that feel like home.',
         icon: '🍲',
         image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80',
-        membersLabel: '8.7K members',
         to: '/community/soul-food',
         live: true,
       },
@@ -189,7 +201,6 @@ export const HOME_PILLARS = {
         description: 'Move. Express. Inspire.',
         icon: '💃',
         image: 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&w=600&q=80',
-        membersLabel: '18.9K members',
         to: '/community/dance',
         live: true,
       },
