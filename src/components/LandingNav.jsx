@@ -1,19 +1,19 @@
-import { Link, NavLink } from 'react-router-dom'
+import ActiveLink from './ActiveLink'
 import { LANDING_NAV } from '../data'
 
 export default function LandingNav({ onNavigate }) {
   return (
     <div className="landing-nav">
       {LANDING_NAV.map((item) => (
-        <NavLink
+        <ActiveLink
           key={item.label}
-          to={item.path}
+          href={item.path}
           className={({ isActive }) => `landing-nav__link ${isActive ? 'is-active' : ''}`}
           end={item.path === '/'}
           onClick={onNavigate}
         >
           {item.label}
-        </NavLink>
+        </ActiveLink>
       ))}
     </div>
   )

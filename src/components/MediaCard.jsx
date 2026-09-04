@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 export default function MediaCard({
   to,
@@ -50,7 +50,7 @@ export default function MediaCard({
 
   if (to) {
     return (
-      <Link to={to} className={cardClass}>
+      <Link href={to} className={cardClass}>
         {body}
       </Link>
     )

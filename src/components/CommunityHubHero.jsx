@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 export default function CommunityHubHero({
   pillar = 'food',
@@ -29,7 +29,7 @@ export default function CommunityHubHero({
               <span key={crumb.label}>
                 {index > 0 ? <span className="comm-hub-hero__crumb-sep" aria-hidden="true">›</span> : null}
                 {crumb.to ? (
-                  <Link to={crumb.to}>{crumb.label}</Link>
+                  <Link href={crumb.to}>{crumb.label}</Link>
                 ) : (
                   <span aria-current="page">{crumb.label}</span>
                 )}
@@ -121,7 +121,7 @@ export function ExploreCategoryCard({ title, description, icon, to, active, comi
 
   if (to && !comingSoon) {
     return (
-      <Link to={to} className={className}>
+      <Link href={to} className={className}>
         {inner}
       </Link>
     )

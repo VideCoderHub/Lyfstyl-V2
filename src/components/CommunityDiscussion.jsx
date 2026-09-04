@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
@@ -38,7 +38,7 @@ export default function CommunityDiscussion({ slug, posts: initialPosts = [], jo
             </div>
             <div>
               {post.author?.id ? (
-                <Link to={`/creators/${post.author.id}`}><strong>{post.author.name}</strong></Link>
+                <Link href={`/creators/${post.author.id}`}><strong>{post.author.name}</strong></Link>
               ) : (
                 <strong>{post.author?.name ?? 'Creator'}</strong>
               )}

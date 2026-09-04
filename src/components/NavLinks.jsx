@@ -1,9 +1,9 @@
-import { NavLink } from 'react-router-dom'
+import ActiveLink from './ActiveLink'
 
 function NavLinkItem({ item, onNavigate }) {
   return (
-    <NavLink
-      to={item.path}
+    <ActiveLink
+      href={item.path}
       className={({ isActive }) =>
         [
           'nav__link',
@@ -18,7 +18,7 @@ function NavLinkItem({ item, onNavigate }) {
     >
       {item.accent ? <span className="nav__link-dot" aria-hidden="true" /> : null}
       {item.label}
-    </NavLink>
+    </ActiveLink>
   )
 }
 

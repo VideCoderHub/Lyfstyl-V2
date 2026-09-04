@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
 export default function ConnectButton({ userId, initialStatus, onStatusChange }) {
   const { isAuthenticated, setMessage } = useAuth()
-  const navigate = useNavigate()
+  const router = useRouter()
   const [status, setStatus] = useState(initialStatus ?? 'none')
   const [loading, setLoading] = useState(false)
 
@@ -71,7 +72,7 @@ export default function ConnectButton({ userId, initialStatus, onStatusChange })
   if (status === 'connected') {
     return (
       <div className="connect-actions">
-        <Link to={`/messages/${userId}`} className="btn btn--primary">
+        <Link href={`/messages/${userId}`} className="btn btn--primary">
           Message
         </Link>
         <button type="button" className="btn btn--outline" disabled={loading} onClick={removeConnection}>
@@ -107,7 +108,7 @@ export default function ConnectButton({ userId, initialStatus, onStatusChange })
       type="button"
       className="btn btn--primary"
       disabled={loading}
-      onClick={() => (isAuthenticated ? sendRequest() : navigate('/login'))}
+      onClick={() => (isAuthenticated ? sendRequest() : router.push('/login'))}
     >
       {loading ? 'Sending…' : 'Connect'}
     </button>

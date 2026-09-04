@@ -21,16 +21,18 @@ npm install
 npm run dev
 ```
 
-- **Frontend:** http://localhost:5173
-- **API:** http://localhost:3001
+- **Frontend (Next.js):** http://localhost:5173
+- **API (Express):** http://localhost:3001
+
+The Next.js dev server proxies `/api` and `/uploads` to the Express API.
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Run API + frontend together |
-| `npm run build` | Build frontend |
-| `npm run start` | Production server (serves `dist/` + API) |
+| `npm run dev` | Run API + Next.js frontend together |
+| `npm run build` | Build Next.js app |
+| `npm run start` | Production: Next.js + API |
 | `npm run seed` | Reset database |
 
 ## Routes
@@ -49,3 +51,12 @@ npm run dev
 | Join / Login | `/join` · `/login` |
 
 Database: `server/data/lyfstyl.json`
+
+## Environment
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | API base URL (default: `/api`) |
+| `API_ORIGIN` | Express origin for Next.js rewrites (default: `http://localhost:3001`) |
+| `PORT` | Express API port (default: `3001`) |
+| `JWT_SECRET` | JWT signing secret |

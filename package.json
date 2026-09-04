@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "vite",
+    "dev:client": "next dev --port 5173",
     "dev:server": "node --watch server/index.js",
-    "build": "vite build",
-    "start": "node server/index.js",
+    "build": "next build",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:client": "next start --port 5173",
+    "start:server": "node server/index.js",
     "seed": "node server/seed.js",
     "lint": "oxlint"
   },
@@ -17,16 +19,14 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "next": "^16.3.4",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.4",
     "concurrently": "^9.1.2",
-    "oxlint": "^1.75.0",
-    "vite": "^8.2.0"
+    "oxlint": "^1.75.0"
   }
 }

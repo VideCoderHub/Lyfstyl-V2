@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import FormCoach, { useFormCoach } from './FormCoach'
 import { useAuth } from '../context/AuthContext'
 import SocialAuthModal from './SocialAuthModal'
@@ -32,7 +33,7 @@ export default function AuthForm({
   benefits = [],
 }) {
   const isJoin = mode === 'join'
-  const navigate = useNavigate()
+  const router = useRouter()
   const { login, register, socialLogin, completeOnboarding, user } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -94,11 +95,11 @@ export default function AuthForm({
           interests: selectedInterests(),
         })
         setSuccess(data.message ?? 'Account created.')
-        navigate(data.user.onboardingComplete ? '/dashboard' : '/join?step=avatar')
+        router.push(data.user.onboardingComplete ? '/dashboard' : '/join?step=avatar')
       } else {
         await login({ email: payload.email, password: payload.password })
         setSuccess('Welcome back!')
-        navigate('/dashboard')
+        router.push('/dashboard')
       }
     } catch (err) {
       setError(err.message)
@@ -115,7 +116,7 @@ export default function AuthForm({
       const data = await socialLogin(socialProvider, { email, name })
       setSocialProvider(null)
       setSuccess(data.message)
-      navigate(data.user.onboardingComplete ? '/dashboard' : '/join?step=avatar')
+      router.push(data.user.onboardingComplete ? '/dashboard' : '/join?step=avatar')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -137,7 +138,7 @@ export default function AuthForm({
         avatarStyle: form.get('avatarStyle'),
       })
       setSuccess('Avatar saved. Feed personalized.')
-      navigate('/discover')
+      router.push('/discover')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -145,7 +146,8 @@ export default function AuthForm({
     }
   }
 
-  const showAvatarStep = isJoin && new URLSearchParams(window.location.search).get('step') === 'avatar'
+  const searchParams = useSearchParams()
+  const showAvatarStep = isJoin && searchParams.get('step') === 'avatar'
 
   function AuthSteps({ current }) {
     const steps = [
@@ -478,7 +480,7 @@ export default function AuthForm({
 
           <p className="auth-card__switch">
             {switchText}{' '}
-            <Link to={switchTo}>{switchLabel}</Link>
+            <Link href={switchTo}>{switchLabel}</Link>
           </p>
         </div>
       </div>

@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
 export default function ApplauseButton({ type, id, initialCount = 0, initialApplauded = false }) {
   const { isAuthenticated, setMessage } = useAuth()
-  const navigate = useNavigate()
+  const router = useRouter()
   const [count, setCount] = useState(initialCount)
   const [applauded, setApplauded] = useState(initialApplauded)
   const [loading, setLoading] = useState(false)
 
   async function toggle() {
     if (!isAuthenticated) {
-      navigate('/login')
+      router.push('/login')
       return
     }
 

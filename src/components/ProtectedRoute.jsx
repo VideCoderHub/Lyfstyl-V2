@@ -1,10 +1,20 @@
-import { Navigate, useLocation } from 'react-router-dom'
+'use client'
+
+import { useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '../context/AuthContext'
 import { Skeleton } from './Skeleton'
 
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
-  const location = useLocation()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace(`/login?from=${encodeURIComponent(pathname)}`)
+    }
+  }, [loading, isAuthenticated, router, pathname])
 
   if (loading) {
     return (
@@ -15,7 +25,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return null
   }
 
   return children

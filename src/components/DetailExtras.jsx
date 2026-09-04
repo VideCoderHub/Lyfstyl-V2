@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 export default function DetailBreadcrumb({ items }) {
   return (
@@ -7,7 +7,7 @@ export default function DetailBreadcrumb({ items }) {
         <span key={item.label}>
           {index > 0 ? <span className="breadcrumb__sep">/</span> : null}
           {item.to ? (
-            <Link to={item.to}>{item.label}</Link>
+            <Link href={item.to}>{item.label}</Link>
           ) : (
             <span aria-current="page">{item.label}</span>
           )}

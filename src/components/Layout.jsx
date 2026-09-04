@@ -1,5 +1,8 @@
+'use client'
+
 import { useEffect, useState } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { FOOTER_LINKS, NAV } from '../data'
 import LandingNav from './LandingNav'
 import NavLinks from './NavLinks'
@@ -13,27 +16,27 @@ function userInitials(name) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
 }
 
-export default function Layout() {
+export default function Layout({ children }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
   const { user, logout, message, setMessage, isAuthenticated } = useAuth()
-  const isHome = location.pathname === '/'
-  const isAuth = location.pathname === '/login' || location.pathname === '/join'
+  const isHome = pathname === '/'
+  const isAuth = pathname === '/login' || pathname === '/join'
 
   const navItems = NAV.filter((item) => !item.auth || isAuthenticated)
 
   useEffect(() => {
     setMenuOpen(false)
     window.scrollTo(0, 0)
-  }, [location.pathname])
+  }, [pathname])
 
   useEffect(() => {
-    if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/join')) {
-      navigate('/dashboard', { replace: true })
+    if (isAuthenticated && (pathname === '/login' || pathname === '/join')) {
+      router.replace('/dashboard')
     }
-  }, [isAuthenticated, location.pathname, navigate])
+  }, [isAuthenticated, pathname, router])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -64,7 +67,7 @@ export default function Layout() {
 
   function handleLogout() {
     logout()
-    navigate('/')
+    router.push('/')
   }
 
   function closeMenu() {
@@ -98,7 +101,7 @@ export default function Layout() {
       ) : null}
 
       <header className={`nav ${scrolled || !isHome || isAuth ? 'nav--solid' : ''} ${isHome ? 'nav--landing' : ''}`}>
-        <Link className="brand" to="/" aria-label="Lyfstyl home">
+        <Link className="brand" href="/" aria-label="Lyfstyl home">
           <span className="brand__mark" aria-hidden="true">
             <svg viewBox="0 0 36 36" fill="none">
               <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="2" />
@@ -125,29 +128,29 @@ export default function Layout() {
         <div className="nav__actions">
           {isHome && !isAuthenticated ? (
             <>
-              <Link to="/discover" className="nav__search" aria-label="Search" title="Search">
+              <Link href="/discover" className="nav__search" aria-label="Search" title="Search">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
                   <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
                   <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </Link>
-              <Link to="/login" className="btn btn--ghost nav__login">
+              <Link href="/login" className="btn btn--ghost nav__login">
                 Log in
               </Link>
-              <Link to="/join" className="btn btn--brand nav__join">
+              <Link href="/join" className="btn btn--brand nav__join">
                 Join Lyfstyl
               </Link>
             </>
           ) : isAuthenticated ? (
             <>
               <NotificationBell />
-              <Link to="/create" className="btn btn--primary nav__create-btn">
+              <Link href="/create" className="btn btn--primary nav__create-btn">
                 Create
               </Link>
-              <Link to="/messages" className="btn btn--ghost nav__messages" title="Messages">
+              <Link href="/messages" className="btn btn--ghost nav__messages" title="Messages">
                 Messages
               </Link>
-              <Link to="/profile" className="nav__user-link" title="Your profile">
+              <Link href="/profile" className="nav__user-link" title="Your profile">
                 <span className="nav__user-avatar" aria-hidden="true">
                   {userInitials(user?.name)}
                 </span>
@@ -159,10 +162,10 @@ export default function Layout() {
             </>
           ) : (
             <>
-              <Link to="/login" className="btn btn--ghost">
+              <Link href="/login" className="btn btn--ghost">
                 Log in
               </Link>
-              <Link to="/join" className="btn btn--primary">
+              <Link href="/join" className="btn btn--primary">
                 Join Now
               </Link>
             </>
@@ -181,14 +184,14 @@ export default function Layout() {
         </div>
       </header>
 
-      <div key={location.pathname} className="page-enter">
-        <Outlet />
+      <div key={pathname} className="page-enter">
+        {children}
       </div>
 
       <footer className="footer footer--product">
         <div className="footer__grid">
           <div>
-            <Link to="/" className="brand__name">
+            <Link href="/" className="brand__name">
               Lyfstyl
             </Link>
             <p className="footer__tagline">
@@ -200,7 +203,7 @@ export default function Layout() {
             <ul className="footer__links">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.path}>
-                  <Link to={link.path}>{link.label}</Link>
+                  <Link href={link.path}>{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -208,16 +211,16 @@ export default function Layout() {
           <div>
             <p className="footer__label">Food</p>
             <ul className="footer__links">
-              <li><Link to="/community?tab=food">All food communities</Link></li>
-              <li><Link to="/community/street-food">Street Food</Link></li>
-              <li><Link to="/community/soul-food">Soul Food</Link></li>
+              <li><Link href="/community?tab=food">All food communities</Link></li>
+              <li><Link href="/community/street-food">Street Food</Link></li>
+              <li><Link href="/community/soul-food">Soul Food</Link></li>
             </ul>
           </div>
           <div>
             <p className="footer__label">Entertainment</p>
             <ul className="footer__links">
-              <li><Link to="/community?tab=entertainment">Entertainment hub</Link></li>
-              <li><Link to="/community/dance">Dance</Link></li>
+              <li><Link href="/community?tab=entertainment">Entertainment hub</Link></li>
+              <li><Link href="/community/dance">Dance</Link></li>
             </ul>
           </div>
         </div>

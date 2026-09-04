@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
@@ -22,7 +22,7 @@ export default function NotificationBell() {
   if (!isAuthenticated) return null
 
   return (
-    <Link to="/notifications" className="nav__bell" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}>
+    <Link href="/notifications" className="nav__bell" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}>
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M12 3a5 5 0 0 0-5 5v2.5c0 .6-.2 1.2-.6 1.7L4.5 14.5h15l-1.9-2.3c-.4-.5-.6-1.1-.6-1.7V8a5 5 0 0 0-5-5Z"

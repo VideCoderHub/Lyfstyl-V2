@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
 export default function FollowButton({ userId, initialFollowing = false, onChange }) {
   const { isAuthenticated, setMessage } = useAuth()
-  const navigate = useNavigate()
+  const router = useRouter()
   const [following, setFollowing] = useState(initialFollowing)
   const [loading, setLoading] = useState(false)
 
   async function toggleFollow() {
     if (!isAuthenticated) {
-      navigate('/login')
+      router.push('/login')
       return
     }
 

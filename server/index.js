@@ -38,14 +38,6 @@ app.use('/api', contentRoutes)
 app.use('/api/challenges', challengeRoutes)
 app.use('/api/uploads', uploadRoutes)
 
-if (process.env.NODE_ENV === 'production') {
-  const distPath = join(__dirname, '..', 'dist')
-  app.use(express.static(distPath))
-  app.get('*', (_req, res) => {
-    res.sendFile(join(distPath, 'index.html'))
-  })
-}
-
 app.use((err, _req, res, _next) => {
   console.error(err)
   res.status(500).json({ error: 'Internal server error.' })

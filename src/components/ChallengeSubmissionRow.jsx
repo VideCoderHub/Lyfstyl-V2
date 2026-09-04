@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
@@ -20,11 +20,11 @@ export default function ChallengeSubmissionRow({ submission, onVote, votingId })
   return (
     <article className="challenge-submission">
       <div className="challenge-submission__rank">#{submission.rank}</div>
-      <Link to={submission.detailUrl} className="challenge-submission__thumb">
+      <Link href={submission.detailUrl} className="challenge-submission__thumb">
         <div style={{ backgroundImage: `url(${submission.image})` }} />
       </Link>
       <div className="challenge-submission__body">
-        <Link to={submission.detailUrl} className="challenge-submission__title">
+        <Link href={submission.detailUrl} className="challenge-submission__title">
           {submission.title}
         </Link>
         <p className="challenge-submission__meta">

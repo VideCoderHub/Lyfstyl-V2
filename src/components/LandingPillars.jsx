@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { enrichSubcommunity, HOME_PILLARS } from '../data/communities'
 
 function SubCommunityCard({ item, variant, index, visible }) {
@@ -40,7 +40,7 @@ function SubCommunityCard({ item, variant, index, visible }) {
 
   if (item.to && !item.comingSoon) {
     return (
-      <Link to={item.to} className={className} style={style}>
+      <Link href={item.to} className={className} style={style}>
         {inner}
       </Link>
     )
@@ -88,7 +88,7 @@ function PillarCard({ variant, visible, delay = 0, communityMap = {} }) {
             <h3>{config.title}</h3>
           </div>
           <p className="landing-pillar__lede">{config.lede}</p>
-          <Link to={config.to} className={`landing-pillar__cta landing-pillar__cta--${variant}`}>
+          <Link href={config.to} className={`landing-pillar__cta landing-pillar__cta--${variant}`}>
             <span>{config.cta}</span>
             <span aria-hidden="true">→</span>
           </Link>
@@ -111,7 +111,7 @@ function PillarCard({ variant, visible, delay = 0, communityMap = {} }) {
             />
           ))}
         </div>
-        <Link to={config.to} className={`landing-pillar__foot landing-pillar__foot--${variant}`}>
+        <Link href={config.to} className={`landing-pillar__foot landing-pillar__foot--${variant}`}>
           View all {variant === 'food' ? 'Food' : 'Entertainment'} communities →
         </Link>
       </div>
