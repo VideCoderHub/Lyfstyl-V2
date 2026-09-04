@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "next dev --port 5173",
+    "dev:client": "node ./node_modules/next/dist/bin/next dev --port 5173",
     "dev:server": "node --watch server/index.js",
-    "build": "next build",
+    "build": "node ./node_modules/next/dist/bin/next build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "start:client": "next start --port 5173",
+    "start:client": "node ./node_modules/next/dist/bin/next start --port 5173",
     "start:server": "node server/index.js",
     "seed": "node server/seed.js",
     "lint": "oxlint"

@@ -11,7 +11,7 @@ export default function VideoPortal({
 }) {
   return (
     <Link
-      to={to}
+      href={to}
       className={`video-portal video-portal--${accent} ${compact ? 'video-portal--compact' : ''} ${className}`.trim()}
     >
       <div className="video-portal__media">

@@ -20,7 +20,7 @@ export function PageCta({ title, text, to = '/join', label = 'Join the Community
     <section className="cta-band page-cta">
       <h2>{title}</h2>
       <p>{text}</p>
-      <Link className="btn btn--primary btn--lg" to={to}>
+      <Link className="btn btn--primary btn--lg" href={to}>
         {label}
       </Link>
     </section>

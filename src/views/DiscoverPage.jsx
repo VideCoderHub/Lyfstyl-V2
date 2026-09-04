@@ -39,10 +39,10 @@ export default function DiscoverPage() {
         lede="AI-personalized stream based on your country, language, and joined communities."
         actions={
           <>
-            <Link className="btn btn--primary" to="/recipes">
+            <Link className="btn btn--primary" href="/recipes">
               Browse recipes
             </Link>
-            <Link className="btn btn--outline" to="/moves">
+            <Link className="btn btn--outline" href="/moves">
               Browse moves
             </Link>
           </>

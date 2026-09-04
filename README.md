@@ -26,6 +26,26 @@ npm run dev
 
 The Next.js dev server proxies `/api` and `/uploads` to the Express API.
 
+### Frontend only
+
+```bash
+npm run dev:client
+```
+
+### API only
+
+```bash
+npm run dev:server
+```
+
+If port **5173** is already in use, stop the other process or run:
+
+```bash
+node ./node_modules/next/dist/bin/next dev --port 5174
+```
+
+> **Note:** On Windows you may see harmless `Watchpack Error` lines about `C:\` system files — the app still runs normally.
+
 ## Scripts
 
 | Command | Description |

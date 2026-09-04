@@ -94,7 +94,7 @@ export default function MessagesPage() {
             {conversations.map((conv) => (
               <li key={conv.user.id}>
                 <Link
-                  to={`/messages/${conv.user.id}`}
+                  href={`/messages/${conv.user.id}`}
                   className={`chat-conversation ${Number(userId) === conv.user.id ? 'is-active' : ''}`}
                 >
                   <span className="chat-conversation__avatar">{(conv.user.name ?? 'U').slice(0, 1)}</span>

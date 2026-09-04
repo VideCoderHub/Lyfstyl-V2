@@ -156,7 +156,7 @@ export default function DashboardPage() {
                     <Link href={`/challenges/${c.id}`} className="btn btn--outline">View</Link>
                     {!c.hasSubmitted && c.status === 'active' ? (
                       <Link
-                        to={`/create?challenge=${c.id}&type=${c.submissionKind === 'move' ? 'move' : 'recipe'}`}
+                        href={`/create?challenge=${c.id}&type=${c.submissionKind === 'move' ? 'move' : 'recipe'}`}
                         className="btn btn--primary"
                       >
                         Submit

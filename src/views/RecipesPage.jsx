@@ -30,7 +30,7 @@ export default function RecipesPage() {
         title="Dishes worth sharing"
         lede="Structured food communities — Recipes, Healthy Eating, Soul Food, Street Food, and more."
         actions={
-          <Link className="btn btn--primary" to={isAuthenticated ? '/create?type=recipe' : '/join'}>
+          <Link className="btn btn--primary" href={isAuthenticated ? '/create?type=recipe' : '/join'}>
             Share a recipe
           </Link>
         }

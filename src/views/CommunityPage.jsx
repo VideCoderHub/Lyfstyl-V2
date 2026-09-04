@@ -25,11 +25,17 @@ export default function CommunityPage() {
   const searchParams = useSearchParams()
   const { isAuthenticated, setMessage, refresh } = useAuth()
   const [communities, setCommunities] = useState([])
-  const [trending, setTrending] = useState([])
+  const [recipeTrending, setRecipeTrending] = useState([])
+  const [moveTrending, setMoveTrending] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   const tab = searchParams.get('tab') === 'food' ? 'food' : 'entertainment'
+
+  const trending = useMemo(
+    () => (tab === 'food' ? recipeTrending : moveTrending).slice(0, 5),
+    [tab, recipeTrending, moveTrending],
+  )
 
   function setTab(nextTab) {
     router.replace(`/community?tab=${nextTab}`)
@@ -44,9 +50,8 @@ export default function CommunityPage() {
     ])
       .then(([communityData, movesData, recipesData]) => {
         setCommunities(communityData.communities ?? [])
-        const moves = (movesData.moves ?? []).map((item) => ({ ...item, kind: 'move' }))
-        const recipes = (recipesData.recipes ?? []).map((item) => ({ ...item, kind: 'recipe' }))
-        setTrending([...moves, ...recipes].slice(0, 5))
+        setMoveTrending((movesData.moves ?? []).map((item) => ({ ...item, kind: 'move' })))
+        setRecipeTrending((recipesData.recipes ?? []).map((item) => ({ ...item, kind: 'recipe' })))
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
@@ -106,7 +111,7 @@ export default function CommunityPage() {
             Join dedicated communities that inspire you. Explore. Connect. Share.
           </p>
           <div className="comm-welcome__actions">
-            <Link className="btn btn--primary btn--lg" to={isAuthenticated ? '/dashboard' : '/join'}>
+            <Link className="btn btn--primary btn--lg" href={isAuthenticated ? '/dashboard' : '/join'}>
               {isAuthenticated ? 'Go to dashboard' : 'Join Lyfstyl'}
             </Link>
             <button type="button" className="btn btn--outline btn--lg" onClick={() => setTab(tab)}>
@@ -195,7 +200,7 @@ export default function CommunityPage() {
 
             <div className="comm-style-row">
               {ENTERTAINMENT_HUB.danceStyles.map((style) => (
-                <Link key={style.slug} to={`/community/${style.slug}`} className="comm-style-chip">
+                <Link key={style.slug} href={`/community/${style.slug}`} className="comm-style-chip">
                   <span aria-hidden="true">{style.icon}</span>
                   {style.title}
                 </Link>
@@ -273,13 +278,15 @@ export default function CommunityPage() {
         ) : null}
 
         {!loading && trending.length ? (
-          <section className="comm-trending">
+          <section className={`comm-trending comm-trending--${tab}`}>
             <div className="section-head comm-section-head">
               <div>
-                <p className="section-eyebrow">Across Lyfstyl</p>
-                <h2>What&apos;s trending</h2>
+                <p className="section-eyebrow">
+                  {tab === 'food' ? 'Food communities' : 'Entertainment'}
+                </p>
+                <h2>{tab === 'food' ? 'Trending recipes' : 'Trending moves'}</h2>
               </div>
-              <Link href="/discover" className="comm-view-all">
+              <Link href={tab === 'food' ? '/recipes' : '/moves'} className="comm-view-all">
                 View all →
               </Link>
             </div>

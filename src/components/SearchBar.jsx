@@ -128,7 +128,7 @@ export function SearchBar({ placeholder = 'Search recipes, moves, communities…
               </>
             )
             return to ? (
-              <Link key={`${item.kind}-${item.id}`} to={to} className="search-result search-result--link">
+              <Link key={`${item.kind}-${item.id}`} href={to} className="search-result search-result--link">
                 {inner}
               </Link>
             ) : (

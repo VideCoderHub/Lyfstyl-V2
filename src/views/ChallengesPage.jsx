@@ -73,11 +73,11 @@ export default function ChallengesPage() {
         lede="Cooking battles live in food communities. Dance battles live in movement communities. Pick your arena."
         actions={
           isAuthenticated ? (
-            <Link className="btn btn--primary" to="/create">
+            <Link className="btn btn--primary" href="/create">
               Create entry
             </Link>
           ) : (
-            <Link className="btn btn--primary" to="/join">
+            <Link className="btn btn--primary" href="/join">
               Join to enter
             </Link>
           )
@@ -154,7 +154,7 @@ export default function ChallengesPage() {
                     </Link>
                   ) : item.entered ? (
                     <Link
-                      to={`/create?challenge=${item.id}&type=${item.submissionKind === 'move' ? 'move' : 'recipe'}`}
+                      href={`/create?challenge=${item.id}&type=${item.submissionKind === 'move' ? 'move' : 'recipe'}`}
                       className="btn btn--primary"
                     >
                       Submit entry

@@ -7,20 +7,21 @@
   --cream-soft: #ece5d9;
 
   /* ——— Semantic verticals (Lyfstyl vision) ——— */
-  --color-food: #e8621a;
-  --color-food-hot: #ff7533;
-  --color-dance: #d4ef4a;
-  --color-dance-deep: #a8c92a;
+  /* Landing / brand: purple · Entertainment: coral · Food: green */
+  --color-brand: #9d50bb;
+  --color-brand-hot: #b86fe0;
+  --color-entertainment: #e8621a;
+  --color-entertainment-hot: #ff7533;
+  --color-food: #2d9d5c;
+  --color-food-hot: #45c97a;
+  --color-dance: #e8621a;
+  --color-dance-deep: #c95210;
   --color-fusion: #e4a824;
   --color-fusion-hot: #f0bc42;
-  --color-entertainment: #9d50bb;
-  --color-entertainment-hot: #b86fe0;
-  --color-brand: #ff4b8b;
-  --color-brand-hot: #ff7a59;
 
   /* Legacy aliases (keep existing class names working) */
-  --coral: var(--color-food);
-  --coral-hot: var(--color-food-hot);
+  --coral: var(--color-entertainment);
+  --coral-hot: var(--color-entertainment-hot);
   --lime: var(--color-dance);
   --lime-deep: var(--color-dance-deep);
 
@@ -28,11 +29,11 @@
   --ink-rgb: 10 18 16;
   --forest-rgb: 21 46 36;
   --cream-rgb: 247 242 234;
-  --food-rgb: 232 98 26;
-  --dance-rgb: 212 239 74;
+  --food-rgb: 45 157 92;
+  --dance-rgb: 232 98 26;
   --fusion-rgb: 228 168 36;
-  --entertainment-rgb: 157 80 187;
-  --brand-rgb: 255 75 139;
+  --entertainment-rgb: 232 98 26;
+  --brand-rgb: 157 80 187;
 
   /* ——— UI tokens ——— */
   --text: var(--cream);
@@ -272,7 +273,7 @@ img {
 .brand__mark {
   width: 2rem;
   height: 2rem;
-  color: var(--color-dance);
+  color: var(--color-brand);
 }
 
 .brand__mark svg {
@@ -4258,7 +4259,7 @@ img {
   font-size: clamp(1.15rem, 3vw, 1.55rem);
   font-weight: 700;
   margin: 0 0 0.85rem;
-  background: linear-gradient(90deg, var(--color-entertainment-hot), var(--color-food-hot));
+  background: linear-gradient(90deg, var(--color-brand-hot), var(--color-brand));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -4570,6 +4571,14 @@ img {
   margin-top: 2.5rem;
   padding-top: 2rem;
   border-top: 1px solid var(--line);
+}
+
+.comm-trending--food .comm-view-all {
+  color: var(--color-food-hot);
+}
+
+.comm-trending--entertainment .comm-view-all {
+  color: var(--color-entertainment-hot);
 }
 
 .comm-features-bar {
@@ -5137,9 +5146,8 @@ img {
   background: linear-gradient(
     100deg,
     var(--color-brand) 0%,
-    var(--color-brand-hot) 35%,
-    var(--color-food-hot) 70%,
-    var(--color-brand) 100%
+    var(--color-brand-hot) 45%,
+    #c89de8 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -5350,12 +5358,12 @@ img {
 }
 
 .landing-pillar--food {
-  background: linear-gradient(165deg, rgb(255 180 100 / 0.18) 0%, rgb(45 32 24 / 0.92) 55%, rgb(30 22 18 / 0.98) 100%);
+  background: linear-gradient(165deg, rgb(var(--food-rgb) / 0.28) 0%, rgb(22 38 28 / 0.92) 55%, rgb(16 28 22 / 0.98) 100%);
   border: 1px solid rgb(var(--food-rgb) / 0.28);
 }
 
 .landing-pillar--entertainment {
-  background: linear-gradient(165deg, rgb(var(--entertainment-rgb) / 0.22) 0%, rgb(36 28 48 / 0.92) 55%, rgb(24 20 34 / 0.98) 100%);
+  background: linear-gradient(165deg, rgb(var(--entertainment-rgb) / 0.24) 0%, rgb(48 28 22 / 0.92) 55%, rgb(32 18 16 / 0.98) 100%);
   border: 1px solid rgb(var(--entertainment-rgb) / 0.32);
 }
 

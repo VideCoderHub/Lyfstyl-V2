@@ -298,7 +298,7 @@ export default function CommunityDetailPage() {
             <div className="section-head"><h2>Top creators</h2></div>
             <div className="people-grid people-grid--compact">
               {topCreators.map((creator) => (
-                <Link key={creator.id} to={`/creators/${creator.id}`} className="people-card people-card--compact">
+                <Link key={creator.id} href={`/creators/${creator.id}`} className="people-card people-card--compact">
                   <span className="people-card__name">{creator.name}</span>
                   <span className="people-card__meta">{creator.posts} posts · {creator.country}</span>
                 </Link>
@@ -384,7 +384,7 @@ export default function CommunityDetailPage() {
             <div className="section-head"><h2>Members</h2></div>
             <div className="people-grid people-grid--compact">
               {members.map((member) => (
-                <Link key={member.id} to={`/creators/${member.id}`} className="people-card people-card--compact">
+                <Link key={member.id} href={`/creators/${member.id}`} className="people-card people-card--compact">
                   <span className="people-card__name">{member.name}</span>
                   <span className="people-card__meta">{member.country} · {member.points} pts</span>
                 </Link>

@@ -28,7 +28,7 @@ export function RelatedContent({ title, items }) {
           const isRecipe = Boolean(item.time)
           const to = isRecipe ? `/recipes/${item.id}` : `/moves/${item.id}`
           return (
-            <Link key={to} to={to} className="related__card">
+            <Link key={to} href={to} className="related__card">
               <div className="related__image" style={{ backgroundImage: `url(${item.image})` }} />
               <div>
                 <strong>{item.title}</strong>

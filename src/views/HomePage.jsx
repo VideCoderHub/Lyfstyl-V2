@@ -131,7 +131,7 @@ export default function HomePage() {
             Join communities that inspire you. Explore. Connect. Share.
           </p>
           <div className="landing-hero__cta landing-hero__line landing-hero__line--4">
-            <Link className="btn btn--brand btn--lg landing-btn-pulse" to={isAuthenticated ? '/dashboard' : '/join'}>
+            <Link className="btn btn--brand btn--lg landing-btn-pulse" href={isAuthenticated ? '/dashboard' : '/join'}>
               {isAuthenticated ? 'Go to dashboard' : 'Join Lyfstyl!'}
             </Link>
             <button type="button" className="btn btn--outline btn--outline-light btn--lg" onClick={() => scrollToPillars()}>

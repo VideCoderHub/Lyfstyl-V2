@@ -32,7 +32,7 @@ export default function MovesPage() {
         title="Clips that hit different"
         lede="Freestyle, hip-hop, house, battle, and social dance communities — watch, save, and enter challenges."
         actions={
-          <Link className="btn btn--primary" to="/challenges">
+          <Link className="btn btn--primary" href="/challenges">
             Join a dance challenge
           </Link>
         }
