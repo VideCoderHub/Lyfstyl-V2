@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import crypto from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { tables, userToJson } from '../db.js'
 import { signToken, requireAuth } from '../middleware/auth.js'
@@ -110,6 +111,48 @@ router.post('/social', (req, res) => {
     badges: getUserBadges(row.id),
     message: `Signed in with ${provider}. Complete onboarding to personalize your feed.`,
   })
+})
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body ?? {}
+  if (!email) return res.status(400).json({ error: 'Email is required.' })
+
+  const row = tables.findOne('users', { email: String(email).toLowerCase() })
+  if (row?.password_hash) {
+    const token = crypto.randomBytes(24).toString('hex')
+    tables.insert('password_resets', {
+      user_id: row.id,
+      token,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      used: 0,
+    })
+    res.json({
+      ok: true,
+      message: 'If that email exists, reset instructions were sent.',
+      resetToken: token,
+      resetUrl: `/login?reset=${token}`,
+    })
+    return
+  }
+
+  res.json({ ok: true, message: 'If that email exists, reset instructions were sent.' })
+})
+
+router.post('/reset-password', async (req, res) => {
+  const { token, password } = req.body ?? {}
+  if (!token || !password) return res.status(400).json({ error: 'Token and password are required.' })
+  if (String(password).length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters.' })
+
+  const reset = tables.findOne('password_resets', { token, used: 0 })
+  if (!reset || new Date(reset.expires_at) < new Date()) {
+    return res.status(400).json({ error: 'Reset link expired or invalid.' })
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10)
+  tables.update('users', { id: reset.user_id }, { password_hash: passwordHash })
+  tables.update('password_resets', { id: reset.id }, { used: 1 })
+
+  res.json({ ok: true, message: 'Password updated. You can sign in now.' })
 })
 
 router.get('/me', requireAuth, (req, res) => {

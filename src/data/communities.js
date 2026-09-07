@@ -3,10 +3,12 @@
 export const PILLAR_TABS = [
   { id: 'entertainment', label: 'Entertainment' },
   { id: 'food', label: 'Food' },
+  { id: 'lifestyle', label: 'Lifestyle' },
 ]
 
 export const DANCE_HUB_SLUG = 'dance'
-export const FOOD_LIVE_SLUGS = ['street-food', 'soul-food']
+export const FOOD_LIVE_SLUGS = ['recipes', 'healthy-eating', 'soul-food', 'street-food', 'fast-food', 'snacks']
+export const LIFESTYLE_LIVE_SLUGS = ['gaming', 'tech', 'fashion', 'fitness']
 export const DANCE_STYLE_SLUGS = ['hip-hop', 'battle', 'house', 'freestyle', 'contemporary', 'social-dance']
 
 export function formatMemberCount(count) {
@@ -93,36 +95,60 @@ export const FOOD_HUB = {
   ],
   live: [
     {
+      slug: 'recipes',
+      title: 'Recipes',
+      tagline: 'Hearty meals from the heart.',
+      description: 'Share and discover dishes from home cooks and pros worldwide.',
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80',
+    },
+    {
+      slug: 'healthy-eating',
+      title: 'Healthy Eating',
+      tagline: 'Good for you, good for the planet.',
+      description: 'Nutrition-forward meals and wellness cooking.',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80',
+    },
+    {
       slug: 'street-food',
       title: 'Street Food',
       tagline: 'Local bites, big flavor.',
       description: 'Market stalls, late-night bites, and urban flavours from every corner.',
-      image:
-        'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=900&q=80',
+      image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=900&q=80',
     },
     {
       slug: 'soul-food',
       title: 'Soul Food',
       tagline: 'Comfort classics that feel like home.',
       description: 'Celebrate rich traditions, bold flavors and timeless recipes that bring people together.',
-      image:
-        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+    },
+    {
+      slug: 'fast-food',
+      title: 'Fast Food',
+      tagline: 'Quick plates, big wins.',
+      description: 'Weeknight heroes and fast comfort food from creators everywhere.',
+      image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=900&q=80',
+    },
+    {
+      slug: 'snacks',
+      title: 'Snacks',
+      tagline: 'Small bites, shareable joy.',
+      description: 'Treats, small plates, and snack culture from every corner.',
+      image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=900&q=80',
     },
   ],
   comingSoon: [
     {
       id: 'vegetarian',
       title: 'Vegetarian',
-      description: 'Good for you, good for the planet.',
-      image:
-        'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80',
+      description: 'Plant-forward plates coming soon.',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80',
     },
     {
       id: 'seafood',
       title: 'Seafood',
-      description: 'Discover, create & share flavors of the sea.',
-      image:
-        'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80',
+      description: 'Flavors of the sea — coming soon.',
+      image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=600&q=80',
     },
   ],
   exploreSections: [
@@ -131,6 +157,30 @@ export const FOOD_HUB = {
     { id: 'community', title: 'Community', description: 'Connect. Share. Be inspired.', icon: '👥' },
     { id: 'videos', title: 'Videos', description: 'Watch, learn and cook', icon: '▶' },
     { id: 'chefs', title: 'Chefs', description: 'Meet our home cooking heroes', icon: '👨‍🍳' },
+  ],
+}
+
+export const LIFESTYLE_HUB = {
+  eyebrow: 'Lifestyle Communities',
+  title: 'Gaming · Tech · Fashion · Fitness',
+  tagline: 'Expand your Lyfstyl beyond the kitchen and dance floor.',
+  lede: 'Phase 2 verticals from the Lyfstyl vision — connect around gaming, creator tech, fashion drops, and fitness culture.',
+  heroImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=80',
+  features: [
+    { icon: '🎮', title: 'Gaming', text: 'Streams, reviews & highlight reels' },
+    { icon: '💻', title: 'Tech', text: 'Creator gear & kitchen innovation' },
+    { icon: '👗', title: 'Fashion', text: 'Street style & outfit culture' },
+    { icon: '💪', title: 'Fitness', text: 'Workouts & active living' },
+  ],
+  live: [
+    { slug: 'gaming', title: 'Gaming', tagline: 'Play. Share. Compete.', description: 'Game highlights, reviews, and creator streams.', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80' },
+    { slug: 'tech', title: 'Tech', tagline: 'Build. Create. Innovate.', description: 'Gadgets, creator gear, and kitchen innovation.', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80' },
+    { slug: 'fashion', title: 'Fashion', tagline: 'Style. Express. Inspire.', description: 'Street style, outfit drops, and runway energy.', image: 'https://images.unsplash.com/photo-1483985988354-763728e1935b?auto=format&fit=crop&w=900&q=80' },
+    { slug: 'fitness', title: 'Fitness', tagline: 'Move. Train. Thrive.', description: 'Workouts, wellness routines, and active living.', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80' },
+  ],
+  comingSoon: [
+    { id: 'travel', title: 'Travel', description: 'Global food & culture journeys.', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80' },
+    { id: 'finance', title: 'Finance', description: 'Creator funds & money moves.', image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80' },
   ],
 }
 
@@ -261,10 +311,14 @@ export function isFoodLiveSlug(slug) {
   return FOOD_LIVE_SLUGS.includes(slug)
 }
 
+export function isLifestyleSlug(slug) {
+  return LIFESTYLE_LIVE_SLUGS.includes(slug)
+}
+
 export function isDanceStyleSlug(slug) {
   return DANCE_STYLE_SLUGS.includes(slug)
 }
 
 export function isFeaturedCommunitySlug(slug) {
-  return slug === DANCE_HUB_SLUG || isFoodLiveSlug(slug) || isDanceStyleSlug(slug)
+  return slug === DANCE_HUB_SLUG || isFoodLiveSlug(slug) || isDanceStyleSlug(slug) || isLifestyleSlug(slug)
 }

@@ -3,7 +3,8 @@ import { addNotification } from './content.js'
 import { awardPoints } from './gamification.js'
 import { formatMove, formatRecipe } from './content.js'
 import { formatChallengeRow } from './challenges.js'
-import { formatUserPublic } from './social.js'
+import { getCommunityClasses } from './learning.js'
+import { getCommunityListings } from './marketplace.js'
 
 export function countCommunityMembers(communityId) {
   return tables.count('user_communities', { community_id: communityId })
@@ -220,6 +221,8 @@ export function getCommunityDetail(slug, userId) {
     topCreators: getTopCreators(row.id),
     posts: getCommunityPosts(row.id),
     activity: getCommunityActivity(row.id),
+    classes: getCommunityClasses(row.id),
+    marketplace: getCommunityListings(row.id),
   }
 }
 

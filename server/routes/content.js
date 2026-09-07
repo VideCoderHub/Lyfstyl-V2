@@ -9,6 +9,7 @@ import { countConnections, getConnectionStatus, getReviewStats } from '../servic
 import { countFollowers, countFollowing, isFollowing } from '../services/feed.js'
 import { getRecommendations, logActivity, personalizeDiscover } from '../services/personalization.js'
 import { searchContent } from '../services/search.js'
+import { checkContentIntegrity } from '../services/contentIntegrity.js'
 
 const router = Router()
 
@@ -17,20 +18,33 @@ router.get('/stats', (_req, res) => {
 })
 
 router.get('/search', optionalAuth, (req, res) => {
-  const { q = '', type = 'all', country = '', language = '', community = '', fuzziness = '0.5' } = req.query
+  const {
+    q = '',
+    type = 'all',
+    country = '',
+    language = '',
+    community = '',
+    creator = '',
+    level = '',
+    fuzziness = '0.5',
+    semantic = 'true',
+  } = req.query
   const results = searchContent({
     q,
     type,
     country,
     language,
     community,
+    creator,
+    level,
     fuzziness: Number(fuzziness),
     user: req.user,
+    semantic: semantic !== 'false',
   })
   if (req.user && q) {
     logActivity(req.user.id, 'search', null, null, { query: q, type, country, tags: [type].filter(Boolean) })
   }
-  res.json({ results, query: q, fuzziness: Number(fuzziness) })
+  res.json({ results, query: q, fuzziness: Number(fuzziness), semantic: semantic !== 'false' })
 })
 
 router.get('/recommendations', optionalAuth, (req, res) => {
@@ -101,8 +115,19 @@ router.get('/recipes/:id', optionalAuth, (req, res) => {
 })
 
 router.post('/recipes', requireAuth, (req, res) => {
-  const { title, description, time, level, image, communitySlug, country, ingredients, steps, tags, challengeId } = req.body ?? {}
+  const { title, description, time, level, image, communitySlug, country, ingredients, steps, tags, challengeId, skipIntegrity } = req.body ?? {}
   if (!title?.trim()) return res.status(400).json({ error: 'Title is required.' })
+
+  const integrity = checkContentIntegrity({
+    type: 'recipe',
+    title,
+    description,
+    steps: steps ?? [],
+    ingredients: ingredients ?? [],
+  })
+  if (!skipIntegrity && !integrity.ok) {
+    return res.status(409).json({ error: integrity.message, integrity })
+  }
 
   const community = communitySlug ? tables.findOne('communities', { slug: communitySlug }) : null
   const result = tables.insert('recipes', {
@@ -128,6 +153,7 @@ router.post('/recipes', requireAuth, (req, res) => {
   res.status(201).json({
     recipe: formatRecipe(tables.findOne('recipes', { id: result.lastInsertRowid }), req.user.id),
     points,
+    integrity,
     challengeSubmission: submission?.submission ?? null,
     challengeMessage: submission?.message ?? null,
   })
@@ -166,8 +192,13 @@ router.get('/moves/:id', optionalAuth, (req, res) => {
 })
 
 router.post('/moves', requireAuth, (req, res) => {
-  const { title, description, style, length, image, videoUrl, communitySlug, country, tags, challengeId } = req.body ?? {}
+  const { title, description, style, length, image, videoUrl, communitySlug, country, tags, challengeId, skipIntegrity } = req.body ?? {}
   if (!title?.trim()) return res.status(400).json({ error: 'Title is required.' })
+
+  const integrity = checkContentIntegrity({ type: 'move', title, description, steps: [style, length].filter(Boolean) })
+  if (!skipIntegrity && !integrity.ok) {
+    return res.status(409).json({ error: integrity.message, integrity })
+  }
 
   const community = communitySlug ? tables.findOne('communities', { slug: communitySlug }) : null
   const result = tables.insert('moves', {
@@ -192,6 +223,7 @@ router.post('/moves', requireAuth, (req, res) => {
   res.status(201).json({
     move: formatMove(tables.findOne('moves', { id: result.lastInsertRowid }), req.user.id),
     points,
+    integrity,
     challengeSubmission: submission?.submission ?? null,
     challengeMessage: submission?.message ?? null,
   })

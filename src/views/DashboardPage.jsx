@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import MediaCard from '../components/MediaCard'
 import PageHero from '../components/PageHero'
+import RecommendationsPanel from '../components/RecommendationsPanel'
 import { Skeleton } from '../components/Skeleton'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
@@ -56,6 +57,8 @@ export default function DashboardPage() {
           <div className="dash-stat"><strong>{stats.challenges ?? 0}</strong><span>Challenges</span></div>
           <div className="dash-stat"><strong>{stats.posts ?? 0}</strong><span>Your posts</span></div>
         </div>
+
+        <RecommendationsPanel title="Recommended for you" />
 
         <div className="dash-grid">
           <section className="dash-panel">

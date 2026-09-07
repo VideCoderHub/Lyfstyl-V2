@@ -34,6 +34,28 @@ export function hasVoted(userId, submissionId) {
   return Boolean(tables.findOne('challenge_votes', { user_id: userId, submission_id: submissionId }))
 }
 
+function detectVoteFraud(userId, submission) {
+  const oneHourAgo = Date.now() - 60 * 60 * 1000
+  const recentVotes = tables
+    .find('challenge_votes', { user_id: userId })
+    .filter((vote) => new Date(vote.created_at).getTime() > oneHourAgo)
+
+  if (recentVotes.length >= 20) {
+    return 'AI fraud monitor: too many votes in a short time. Please slow down.'
+  }
+
+  const authorVotes = recentVotes.filter((vote) => {
+    const row = tables.findOne('challenge_submissions', { id: vote.submission_id })
+    return row?.user_id === submission.user_id
+  })
+
+  if (authorVotes.length >= 5) {
+    return 'AI fraud monitor: suspicious voting pattern detected for this creator.'
+  }
+
+  return null
+}
+
 function contentRow(entityType, entityId) {
   if (entityType === 'recipe') return tables.findOne('recipes', { id: Number(entityId) })
   if (entityType === 'move') return tables.findOne('moves', { id: Number(entityId) })
@@ -293,6 +315,9 @@ export function toggleSubmissionVote(user, submissionId) {
   if (submission.user_id === user.id) {
     return { error: 'You cannot vote on your own submission.', status: 400 }
   }
+
+  const fraudCheck = detectVoteFraud(user.id, submission)
+  if (fraudCheck) return { error: fraudCheck, status: 429, fraud: true }
 
   const existing = tables.findOne('challenge_votes', {
     user_id: user.id,

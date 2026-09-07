@@ -10,6 +10,7 @@ import {
   DANCE_HUB_SLUG,
   ENTERTAINMENT_HUB,
   FOOD_HUB,
+  LIFESTYLE_HUB,
   FOOD_LIVE_SLUGS,
   formatMemberCount,
   PILLAR_TABS,
@@ -30,7 +31,8 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const tab = searchParams.get('tab') === 'food' ? 'food' : 'entertainment'
+  const tabParam = searchParams.get('tab')
+  const tab = tabParam === 'food' ? 'food' : tabParam === 'lifestyle' ? 'lifestyle' : 'entertainment'
 
   const trending = useMemo(
     () => (tab === 'food' ? recipeTrending : moveTrending).slice(0, 5),
@@ -71,6 +73,12 @@ export default function CommunityPage() {
   }))
 
   const danceHub = communityMap[DANCE_HUB_SLUG]
+
+  const lifestyleLive = LIFESTYLE_HUB.live.map((item) => ({
+    ...item,
+    api: communityMap[item.slug],
+    membersLabel: communityMap[item.slug] ? formatMembers(communityMap[item.slug].memberCount) : '',
+  }))
 
   async function handleJoin(slug, joined) {
     if (!isAuthenticated) return router.push('/join')
@@ -266,18 +274,62 @@ export default function CommunityPage() {
             </div>
 
             <p className="comm-food-footnote">
-              Street Food and Soul Food are your dedicated food homes — not scattered categories.
+              All six launch food communities from the Lyfstyl deck are live — Recipes, Healthy Eating, Street Food, Soul Food, Fast Food, and Snacks.
               {' '}
-              <Link href={`/community/${FOOD_LIVE_SLUGS[0]}`}>Start with Street Food</Link>
-              {' '}
-              or
-              {' '}
-              <Link href={`/community/${FOOD_LIVE_SLUGS[1]}`}>Soul Food</Link>.
+              <Link href={`/community/${FOOD_LIVE_SLUGS[2]}`}>Start with Street Food</Link>.
             </p>
           </div>
         ) : null}
 
-        {!loading && trending.length ? (
+        {!loading && tab === 'lifestyle' ? (
+          <div className="comm-pillar comm-pillar--lifestyle" role="tabpanel">
+            <div className="section-head comm-section-head">
+              <div>
+                <p className="section-eyebrow">{LIFESTYLE_HUB.eyebrow}</p>
+                <h2>{LIFESTYLE_HUB.title}</h2>
+                <p>{LIFESTYLE_HUB.lede}</p>
+              </div>
+            </div>
+            <div className="comm-food-live-grid">
+              {lifestyleLive.map((item) => (
+                <article key={item.slug} className="comm-food-card">
+                  <Link href={`/community/${item.slug}`} className="comm-food-card__media">
+                    <img src={item.image} alt="" />
+                  </Link>
+                  <div className="comm-food-card__body">
+                    <span className="tag">Lifestyle</span>
+                    <Link href={`/community/${item.slug}`}><h3>{item.title}</h3></Link>
+                    <p className="comm-food-card__tagline">{item.tagline}</p>
+                    <p>{item.description}</p>
+                    <p className="comm-food-card__meta">{item.membersLabel}</p>
+                    <div className="comm-food-card__actions">
+                      <Link href={`/community/${item.slug}`} className="btn btn--primary">Explore →</Link>
+                      {item.api ? (
+                        <button
+                          type="button"
+                          className={`btn ${item.api.joined ? 'btn--outline' : 'btn--ghost'}`}
+                          onClick={() => handleJoin(item.slug, item.api.joined)}
+                        >
+                          {item.api.joined ? 'Joined' : 'Join'}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="section-head comm-section-head">
+              <div><p className="section-eyebrow">Phase 3–4</p><h2>Coming soon</h2></div>
+            </div>
+            <div className="comm-soon-grid">
+              {LIFESTYLE_HUB.comingSoon.map((item) => (
+                <ComingSoonCard key={item.id} {...item} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {!loading && trending.length && tab !== 'lifestyle' ? (
           <section className={`comm-trending comm-trending--${tab}`}>
             <div className="section-head comm-section-head">
               <div>

@@ -22,6 +22,8 @@ export default function CreatePage() {
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState('')
   const [communitySlug, setCommunitySlug] = useState(communityParam ?? '')
   const [communityInfo, setCommunityInfo] = useState(null)
+  const [integrityWarning, setIntegrityWarning] = useState(null)
+  const [skipIntegrity, setSkipIntegrity] = useState(false)
 
   useEffect(() => {
     api.getCommunities().then((data) => setCommunities(data.communities ?? []))
@@ -60,6 +62,7 @@ export default function CreatePage() {
     const payload = Object.fromEntries(form.entries())
 
     try {
+      const common = { skipIntegrity: skipIntegrity || undefined }
       if (type === 'recipe') {
         const data = await api.createRecipe({
           title: payload.title,
@@ -72,7 +75,9 @@ export default function CreatePage() {
           steps: payload.steps?.split('\n').filter(Boolean) ?? [],
           image: imageUrl || undefined,
           challengeId: challengeId ? Number(challengeId) : undefined,
+          ...common,
         })
+        if (data.integrity?.warning) setIntegrityWarning(data.integrity.message)
         setMessage(data.challengeMessage ?? 'Recipe published!')
         if (challengeId) router.push(`/challenges/${challengeId}`)
         else if (communityParam) router.push(`/community/${communityParam}`)
@@ -88,13 +93,19 @@ export default function CreatePage() {
           image: imageUrl || undefined,
           videoUrl: uploadedVideoUrl || payload.videoUrl || '',
           challengeId: challengeId ? Number(challengeId) : undefined,
+          ...common,
         })
+        if (data.integrity?.warning) setIntegrityWarning(data.integrity.message)
         setMessage(data.challengeMessage ?? 'Move published!')
         if (challengeId) router.push(`/challenges/${challengeId}`)
         else if (communityParam) router.push(`/community/${communityParam}`)
         else router.push(`/moves/${data.move.id}`)
       }
     } catch (err) {
+      if (err.message?.includes('similar')) {
+        setIntegrityWarning(err.message)
+        setSkipIntegrity(false)
+      }
       setMessage(err.message)
     } finally {
       setLoading(false)
@@ -268,6 +279,15 @@ export default function CreatePage() {
             <span>Country</span>
             <input name="country" defaultValue={user?.country ?? ''} />
           </label>
+
+          {integrityWarning ? (
+            <div className="integrity-warning">
+              <p>{integrityWarning}</p>
+              <button type="button" className="btn btn--outline" onClick={() => setSkipIntegrity(true)}>
+                Publish anyway with credit
+              </button>
+            </div>
+          ) : null}
 
           <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={loading}>
             {loading ? 'Publishing…' : challenge ? 'Publish challenge entry' : 'Publish to Lyfstyl'}

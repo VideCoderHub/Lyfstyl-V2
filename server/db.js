@@ -32,6 +32,9 @@ const emptyDb = () => ({
   reviews: [],
   follows: [],
   applause: [],
+  marketplace_listings: [],
+  classes: [],
+  password_resets: [],
   _counters: {},
 })
 
@@ -103,6 +106,9 @@ export function userToJson(row) {
     language: row.language,
     interests: parseJson(row.interests),
     avatarStyle: row.avatar_style,
+    avatarConfig: parseJson(row.avatar_config, null),
+    avatarLevel: row.avatar_level ?? 1,
+    premium: Boolean(row.premium),
     points: row.points,
     provider: row.provider,
     onboardingComplete: Boolean(row.onboarding_complete),

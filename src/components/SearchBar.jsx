@@ -41,20 +41,31 @@ export default function FilterChips({ page, active, onChange }) {
   )
 }
 
-export function SearchBar({ placeholder = 'Search recipes, moves, communities…' }) {
+export function SearchBar({ placeholder = 'Try: easy dinner from Mexico, hip-hop tutorials…' }) {
   const [query, setQuery] = useState('')
   const [fuzziness, setFuzziness] = useState(0.5)
+  const [semantic, setSemantic] = useState(true)
+  const [country, setCountry] = useState('')
+  const [type, setType] = useState('all')
+  const [creator, setCreator] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function runSearch(event) {
     event.preventDefault()
-    if (!query.trim()) return
+    if (!query.trim() && !country && type === 'all') return
     setLoading(true)
     setError('')
     try {
-      const data = await api.search({ q: query.trim(), fuzziness: String(fuzziness) })
+      const data = await api.search({
+        q: query.trim(),
+        fuzziness: String(fuzziness),
+        semantic: String(semantic),
+        country,
+        type,
+        creator,
+      })
       setResults(data.results ?? [])
     } catch (err) {
       setError(err.message)
@@ -88,10 +99,45 @@ export function SearchBar({ placeholder = 'Search recipes, moves, communities…
           />
           <span>{fuzziness.toFixed(1)}</span>
         </label>
+        <label className="search-form__toggle">
+          <input type="checkbox" checked={semantic} onChange={(e) => setSemantic(e.target.checked)} />
+          <span>AI semantic search</span>
+        </label>
         <button type="submit" className="btn btn--primary">
           {loading ? 'Searching…' : 'Search'}
         </button>
       </form>
+
+      <div className="search-filters">
+        <label className="field field--compact">
+          <span>Type</span>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="all">All</option>
+            <option value="recipe">Recipes</option>
+            <option value="move">Moves</option>
+            <option value="story">Stories</option>
+            <option value="community">Communities</option>
+          </select>
+        </label>
+        <label className="field field--compact">
+          <span>Country</span>
+          <select value={country} onChange={(e) => setCountry(e.target.value)}>
+            <option value="">Any</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Japan">Japan</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Italy">Italy</option>
+            <option value="USA">USA</option>
+            <option value="UK">UK</option>
+            <option value="South Korea">South Korea</option>
+          </select>
+        </label>
+        <label className="field field--compact">
+          <span>Creator</span>
+          <input value={creator} onChange={(e) => setCreator(e.target.value)} placeholder="Name" />
+        </label>
+      </div>
 
       {error ? <p className="form-message form-message--error">{error}</p> : null}
 

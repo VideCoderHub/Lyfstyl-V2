@@ -4,6 +4,7 @@ import ContentViewToggle from '../components/ContentViewToggle'
 import MediaCard from '../components/MediaCard'
 import PageHero, { PageCta } from '../components/PageHero'
 import FilterChips, { SearchBar, useFilteredFetch } from '../components/SearchBar'
+import RecommendationsPanel from '../components/RecommendationsPanel'
 import UserBadgePanel from '../components/UserBadgePanel'
 import { CardGridSkeleton } from '../components/Skeleton'
 import { api } from '../api/client'
@@ -50,6 +51,7 @@ export default function DiscoverPage() {
       />
 
       <section className="content-wrap content-wrap--with-panel">
+        <RecommendationsPanel title="Because you joined communities" />
         <div>
           <SearchBar />
           <div className="content-toolbar">

@@ -6029,3 +6029,128 @@ img {
   justify-content: center;
   margin-top: 1.25rem;
 }
+
+/* Deck feature additions */
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.search-form__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.field--compact {
+  min-width: 140px;
+}
+
+.recommendations-panel {
+  margin-bottom: 2rem;
+}
+
+.marketplace-grid,
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.marketplace-card,
+.learning-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.marketplace-card__image,
+.learning-card__image {
+  aspect-ratio: 16 / 10;
+  background-size: cover;
+  background-position: center;
+}
+
+.marketplace-card__body,
+.learning-card__body {
+  padding: 1rem;
+}
+
+.marketplace-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.marketplace-card__price,
+.learning-card__meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.premium-perks {
+  margin: 0.75rem 0 1rem;
+  padding-left: 1.1rem;
+}
+
+.dash-panel--premium {
+  border-color: rgb(var(--brand-rgb) / 0.35);
+}
+
+.integrity-warning {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e8b020;
+  background: rgb(232 176 32 / 0.12);
+  margin-bottom: 1rem;
+}
+
+.mascot__country-emoji {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.25rem;
+  font-size: 2rem;
+  z-index: 2;
+}
+
+.mascot--country .mascot__stage {
+  position: relative;
+}
+
+.celebrate--fireworks .celebrate__piece {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.celebrate__mascot {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.comm-pillar-tabs__btn--lifestyle.is-active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+}
+
+.avatar-grid--compact .avatar-card {
+  min-height: auto;
+  padding: 0.65rem;
+}
+
+.auth-forgot {
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+}

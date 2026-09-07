@@ -59,6 +59,7 @@ export default function RecipeDetailPage() {
       celebrate({
         title: 'Badge unlocked!',
         badges: data.newBadges,
+        variant: 'trophy',
         shareText: `I just earned ${data.newBadges[0].name} on Lyfstyl!`,
       })
       await refresh()

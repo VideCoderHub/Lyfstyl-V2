@@ -80,13 +80,13 @@ export function useFormCoach({ mode = 'join', interests = {}, avatarStyle = 'che
     }
   }, [progress, activeField])
 
-  return { message, mascot, progress, trackField, onFocusField, activeField }
+  return { message, mascot, progress, trackField, onFocusField, activeField, country: values.country }
 }
 
-export default function FormCoach({ message, mascot, progress }) {
+export default function FormCoach({ message, mascot, progress, country }) {
   return (
     <div className="form-coach">
-      <MascotCharacter type={mascot} size="lg" speech={message} />
+      <MascotCharacter type={mascot} size="lg" speech={message} country={country} />
       <div className="form-coach__progress" aria-label={`Form progress ${progress}%`}>
         <div className="form-coach__progress-track">
           <div className="form-coach__progress-fill" style={{ width: `${progress}%` }} />

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import ConnectButton from '../components/ConnectButton'
 import PageHero from '../components/PageHero'
 import { api } from '../api/client'
-import { useAuth } from '../context/AuthContext'
+import { avatarLevelLabel } from '../data/mascots'
 
 const AVATAR_OPTIONS = ['chef', 'dancer', 'duo', 'creator']
 
@@ -177,6 +177,43 @@ export default function ProfilePage() {
               <p className="page-status">Join communities to personalize your feed.</p>
             )}
             <Link href="/community" className="btn btn--outline btn--block">Browse communities</Link>
+          </div>
+
+          <div className="dash-panel dash-panel--premium">
+            <h2>Lyfstyl Premium</h2>
+            <p>Exclusive competitions, advanced analytics, enhanced creator tools, and unique badges.</p>
+            <ul className="premium-perks">
+              <li>Priority challenge placement</li>
+              <li>Advanced creator analytics</li>
+              <li>Avatar customization unlocks</li>
+              <li>Premium badge on profile</li>
+            </ul>
+            <p className="profile-stat">
+              Status: <strong>{user?.premium ? 'Premium member' : 'Free plan'}</strong>
+            </p>
+            {!user?.premium ? (
+              <button
+                type="button"
+                className="btn btn--primary btn--block"
+                onClick={async () => {
+                  await api.updateProfile({ premium: true })
+                  await refresh()
+                  setMessage('Welcome to Lyfstyl Premium! (demo activation)')
+                }}
+              >
+                Upgrade to Premium
+              </button>
+            ) : (
+              <span className="tag tag--food">Premium active</span>
+            )}
+          </div>
+
+          <div className="dash-panel">
+            <h2>Avatar evolution</h2>
+            <p className="profile-stat">
+              Level <strong>{user?.avatarLevel ?? 1}</strong> — {avatarLevelLabel(user?.avatarLevel)}
+            </p>
+            <p className="page-status">Your avatar evolves as you earn creator points and badges.</p>
           </div>
 
           <div className="dash-panel">

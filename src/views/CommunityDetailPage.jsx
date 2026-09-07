@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import CommunityDiscussion from '../components/CommunityDiscussion'
 import CommunityHubHero, { ExploreCategoryCard } from '../components/CommunityHubHero'
+import LearningSection from '../components/LearningSection'
+import MarketplaceSection from '../components/MarketplaceSection'
 import MediaCard from '../components/MediaCard'
 import { CardGridSkeleton } from '../components/Skeleton'
 import { api } from '../api/client'
@@ -14,6 +16,7 @@ import {
   FOOD_HUB,
   isDanceStyleSlug,
   isFoodLiveSlug,
+  isLifestyleSlug,
 } from '../data/communities'
 import { useAuth } from '../context/AuthContext'
 
@@ -54,7 +57,7 @@ export default function CommunityDetailPage() {
 
   const theme = COMMUNITY_DETAIL_THEMES[slug]
   const isDanceHub = slug === DANCE_HUB_SLUG
-  const isRichLayout = Boolean(theme) || isDanceStyleSlug(slug)
+  const isRichLayout = Boolean(theme) || isDanceStyleSlug(slug) || isLifestyleSlug(slug)
 
   function loadCommunity() {
     return api.getCommunity(slug).then(setData)
@@ -110,8 +113,8 @@ export default function CommunityDetailPage() {
     )
   }
 
-  const { community, feed, members, topCreators, posts, activity } = data
-  const createType = community.vertical === 'dance' ? 'move' : 'recipe'
+  const { community, feed, members, topCreators, posts, activity, classes, marketplace } = data
+  const createType = community.vertical === 'dance' ? 'move' : community.vertical === 'lifestyle' ? 'recipe' : 'recipe'
   const createUrl = `/create?community=${community.slug}&type=${createType}`
   const breadcrumbs = buildBreadcrumbs(slug, community.name)
   const pillar = theme?.pillar ?? (community.vertical === 'dance' ? 'entertainment' : 'food')
@@ -275,8 +278,8 @@ export default function CommunityDetailPage() {
         ) : null}
 
         {activity?.length ? (
-          <section className="community-activity">
-            <div className="section-head"><h2>Recent activity</h2></div>
+          <section id="stories" className="community-activity">
+            <div className="section-head"><h2>Community stories</h2></div>
             <ul className="activity-feed">
               {activity.map((item) => (
                 <li key={item.id} className="activity-feed__item">
@@ -298,7 +301,7 @@ export default function CommunityDetailPage() {
         ) : null}
 
         {topCreators?.length ? (
-          <section>
+          <section id="chefs">
             <div className="section-head"><h2>Top creators</h2></div>
             <div className="people-grid people-grid--compact">
               {topCreators.map((creator) => (
@@ -311,9 +314,12 @@ export default function CommunityDetailPage() {
           </section>
         ) : null}
 
+        <LearningSection classes={classes ?? []} />
+        <MarketplaceSection listings={marketplace ?? []} />
+
         {feed.recipes?.length ? (
           <>
-            <div className="section-head">
+            <div className="section-head" id="recipes">
               <h2>Recipes in this community</h2>
               <Link href={`/recipes?community=${community.slug}`}>View all</Link>
             </div>
@@ -340,7 +346,7 @@ export default function CommunityDetailPage() {
 
         {!isDanceHub && feed.moves?.length ? (
           <>
-            <div className="section-head">
+            <div className="section-head" id="videos">
               <h2>Dance clips</h2>
               <Link href={`/moves?community=${community.slug}`}>View all</Link>
             </div>

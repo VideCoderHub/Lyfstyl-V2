@@ -1,19 +1,29 @@
-export default function MascotCharacter({ type = 'chef', size = 'md', animate = true, speech }) {
+import { getMascotForCountry } from '../data/mascots'
+
+export default function MascotCharacter({ type = 'chef', size = 'md', animate = true, speech, country }) {
+  const countryMascot = getMascotForCountry(country)
+  const resolvedType = countryMascot?.type ?? type
   const className = [
     'mascot',
-    `mascot--${type}`,
+    `mascot--${resolvedType}`,
     `mascot--${size}`,
     animate ? 'mascot--animate' : '',
+    countryMascot ? 'mascot--country' : '',
   ]
     .filter(Boolean)
     .join(' ')
 
+  const bubbleText = speech ?? countryMascot?.speech
+
   return (
-    <div className={className} aria-hidden={!speech}>
+    <div className={className} aria-hidden={!bubbleText}>
       <div className="mascot__stage">
-        {type === 'chef' ? <ChefSvg /> : null}
-        {type === 'dancer' ? <DancerSvg /> : null}
-        {type === 'duo' ? (
+        {countryMascot ? (
+          <span className="mascot__country-emoji" aria-hidden="true">{countryMascot.emoji}</span>
+        ) : null}
+        {resolvedType === 'chef' ? <ChefSvg /> : null}
+        {resolvedType === 'dancer' ? <DancerSvg /> : null}
+        {resolvedType === 'duo' ? (
           <div className="mascot__duo">
             <ChefSvg />
             <DancerSvg />
@@ -21,9 +31,10 @@ export default function MascotCharacter({ type = 'chef', size = 'md', animate = 
         ) : null}
         <span className="mascot__shadow" />
       </div>
-      {speech ? (
+      {bubbleText ? (
         <div className="mascot__bubble" role="status">
-          <p>{speech}</p>
+          {countryMascot ? <strong>{countryMascot.name}</strong> : null}
+          <p>{bubbleText}</p>
         </div>
       ) : null}
     </div>

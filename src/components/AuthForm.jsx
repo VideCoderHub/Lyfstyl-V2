@@ -2,9 +2,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import FormCoach, { useFormCoach } from './FormCoach'
+import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import SocialAuthModal from './SocialAuthModal'
 import { SOCIAL_PROVIDERS } from './SocialIcons'
+import { AVATAR_CUSTOMIZATION } from '../data/mascots'
 
 const COUNTRIES = ['Kenya', 'Japan', 'Nigeria', 'Italy', 'Mexico', 'South Korea', 'USA', 'UK', 'South Africa']
 const LANGUAGES = [
@@ -42,6 +44,10 @@ export default function AuthForm({
   const [interests, setInterests] = useState({ food: true, dance: true, both: false })
   const [socialProvider, setSocialProvider] = useState(null)
   const [avatarStyle, setAvatarStyle] = useState('chef')
+  const [avatarConfig, setAvatarConfig] = useState({ hair: 'natural', outfit: 'chef-coat', expression: 'warm' })
+  const [forgotOpen, setForgotOpen] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [resetToken, setResetToken] = useState('')
   const joinCoach = useFormCoach({ mode: 'join', interests })
   const avatarCoach = useFormCoach({ mode: 'avatar', interests, avatarStyle })
 
@@ -135,10 +141,26 @@ export default function AuthForm({
         country: form.get('country') || user?.country,
         language: form.get('language') || user?.language,
         interests: selectedInterests(),
-        avatarStyle: form.get('avatarStyle'),
+        avatarStyle: form.get('avatarStyle') || avatarStyle,
+        avatarConfig,
       })
       setSuccess('Avatar saved. Feed personalized.')
       router.push('/discover')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleForgotPassword(event) {
+    event.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const data = await api.forgotPassword({ email: forgotEmail })
+      setSuccess(data.message)
+      if (data.resetToken) setResetToken(data.resetToken)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -185,7 +207,7 @@ export default function AuthForm({
             <p className="auth-card__eyebrow">Step 2 · Personalize</p>
             <h1>Build your Lyfstyl identity</h1>
             <p className="auth-card__lede">
-              Choose a starter avatar. AI-generated avatars arrive in a future release.
+              Customize your animated avatar — hairstyle, outfit, and expression evolve as you create.
             </p>
 
             <form className="auth-form" onSubmit={handleAvatarSubmit}>
@@ -212,6 +234,25 @@ export default function AuthForm({
                   ))}
                 </div>
               </div>
+
+              {Object.entries(AVATAR_CUSTOMIZATION).map(([key, options]) => (
+                <div key={key} className="auth-form__section">
+                  <span className="auth-form__section-label">{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                  <div className="avatar-grid avatar-grid--compact">
+                    {options.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        className={`avatar-card ${avatarConfig[key] === option.id ? 'is-selected' : ''}`}
+                        onClick={() => setAvatarConfig((prev) => ({ ...prev, [key]: option.id }))}
+                      >
+                        <span className="avatar-card__emoji" aria-hidden="true">{option.emoji}</span>
+                        <strong>{option.label}</strong>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
 
               <div className="auth-form__section">
                 <span className="auth-form__section-label">Your preferences</span>
@@ -458,11 +499,29 @@ export default function AuthForm({
                   <input type="checkbox" name="remember" />
                   Remember me
                 </label>
-                <button type="button" className="text-link">
+                <button type="button" className="text-link" onClick={() => setForgotOpen(true)}>
                   Forgot password?
                 </button>
               </div>
             )}
+
+            {forgotOpen && !isJoin ? (
+              <div className="auth-forgot">
+                <p>Enter your email and we&apos;ll send reset instructions.</p>
+                <label className="field">
+                  <span>Email</span>
+                  <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required />
+                </label>
+                <button type="button" className="btn btn--outline btn--block" onClick={handleForgotPassword} disabled={loading}>
+                  Send reset link
+                </button>
+                {resetToken ? (
+                  <p className="form-message form-message--success">
+                    Demo reset token: <code>{resetToken}</code> — use on login with new password via API.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             {error ? <p className="form-message form-message--error">{error}</p> : null}
             {success ? <p className="form-message form-message--success">{success}</p> : null}

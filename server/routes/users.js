@@ -41,7 +41,7 @@ router.patch('/me/notifications/read', requireAuth, (req, res) => {
 })
 
 router.patch('/me/profile', requireAuth, (req, res) => {
-  const { name, bio, country, language, interests, avatarStyle } = req.body ?? {}
+  const { name, bio, country, language, interests, avatarStyle, avatarConfig, premium } = req.body ?? {}
   const patch = {}
   if (name) patch.name = String(name).trim()
   if (bio !== undefined) patch.bio = String(bio).slice(0, 280)
@@ -49,6 +49,8 @@ router.patch('/me/profile', requireAuth, (req, res) => {
   if (language) patch.language = String(language)
   if (interests) patch.interests = JSON.stringify(interests)
   if (avatarStyle) patch.avatar_style = avatarStyle
+  if (avatarConfig) patch.avatar_config = JSON.stringify(avatarConfig)
+  if (premium !== undefined) patch.premium = premium ? 1 : 0
 
   tables.update('users', { id: req.user.id }, patch)
   res.json({ user: userToJson(tables.findOne('users', { id: req.user.id })) })
@@ -134,7 +136,7 @@ router.post('/comments/:type/:id', requireAuth, (req, res) => {
 })
 
 router.patch('/me/onboarding', requireAuth, (req, res) => {
-  const { age, country, language, interests, avatarStyle } = req.body ?? {}
+  const { age, country, language, interests, avatarStyle, avatarConfig } = req.body ?? {}
   if (!age || !country || !language) {
     return res.status(400).json({ error: 'Age, country, and language are required.' })
   }
@@ -150,6 +152,8 @@ router.patch('/me/onboarding', requireAuth, (req, res) => {
       language: String(language),
       interests: JSON.stringify(normalizedInterests),
       avatar_style: avatarStyle ?? 'default',
+      avatar_config: avatarConfig ? JSON.stringify(avatarConfig) : null,
+      avatar_level: 1,
       onboarding_complete: 1,
     },
   )

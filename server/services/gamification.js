@@ -10,7 +10,18 @@ export function awardPoints(userId, points, meta = {}) {
     meta: JSON.stringify({ points, ...meta }),
   })
   checkBadges(userId)
+  updateAvatarLevel(userId)
   return tables.findOne('users', { id: userId }).points
+}
+
+export function updateAvatarLevel(userId) {
+  const user = tables.findOne('users', { id: userId })
+  if (!user) return 1
+  const level = user.points >= 2000 ? 5 : user.points >= 1000 ? 4 : user.points >= 600 ? 3 : user.points >= 300 ? 2 : 1
+  if (user.avatar_level !== level) {
+    tables.update('users', { id: userId }, { avatar_level: level })
+  }
+  return level
 }
 
 export function checkBadges(userId) {

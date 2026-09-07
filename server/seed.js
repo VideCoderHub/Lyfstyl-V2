@@ -28,6 +28,10 @@ const COMMUNITIES = [
   { slug: 'battle', name: 'Battle', category: 'dance', vertical: 'dance', description: 'Competition drops and cypher moments.' },
   { slug: 'contemporary', name: 'Contemporary', category: 'dance', vertical: 'dance', description: 'Story-driven movement and flow.' },
   { slug: 'social-dance', name: 'Social Dance', category: 'dance', vertical: 'dance', description: 'Party moves everyone can learn.' },
+  { slug: 'gaming', name: 'Gaming', category: 'lifestyle', vertical: 'lifestyle', description: 'Game highlights, reviews, and creator streams.' },
+  { slug: 'tech', name: 'Tech', category: 'lifestyle', vertical: 'lifestyle', description: 'Gadgets, creator gear, and kitchen innovation.' },
+  { slug: 'fashion', name: 'Fashion', category: 'lifestyle', vertical: 'lifestyle', description: 'Street style, outfit drops, and runway energy.' },
+  { slug: 'fitness', name: 'Fitness', category: 'lifestyle', vertical: 'lifestyle', description: 'Workouts, wellness routines, and active living.' },
 ]
 
 const BADGES = [
@@ -116,6 +120,67 @@ const MOVE_EXTRAS = {
     description: 'Battle-ready footwork built for challenge entries and crowd reactions.',
     video_url: SAMPLE_VIDEO,
   },
+}
+
+}
+
+const MARKETPLACE_LISTINGS = [
+  { community: 'street-food', title: 'Portable grill kit', description: 'Verified merchant · perfect for night market pop-ups.', price: 89, category: 'equipment', featured: 1, verified: 1, image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80' },
+  { community: 'soul-food', title: 'Cast iron skillet (12")', description: 'Heritage cookware for soul classics.', price: 54, category: 'equipment', featured: 1, verified: 1, image: 'https://images.unsplash.com/photo-1585664624472-180dc65765fa?auto=format&fit=crop&w=600&q=80' },
+  { community: 'recipes', title: 'Digital recipe bundle — Africa', description: '20 chef-tested recipes from across the continent.', price: 12, category: 'digital', featured: 0, verified: 1, image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80' },
+  { community: 'healthy-eating', title: 'Meal prep container set', description: 'BPA-free containers for weekly wellness cooking.', price: 29, category: 'equipment', featured: 0, verified: 1, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' },
+  { community: 'tech', title: 'Creator ring light', description: 'Essential lighting for kitchen and dance content.', price: 45, category: 'gear', featured: 1, verified: 1, image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=600&q=80' },
+  { community: 'gaming', title: 'Stream deck mini', description: 'Control your live cooking or dance streams.', price: 79, category: 'gear', featured: 0, verified: 1, image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80' },
+]
+
+const CLASSES = [
+  { community: 'street-food', title: 'Night market tacos masterclass', description: 'Learn authentic street taco prep with a Mexico City chef.', duration: '45 min', level: 'Beginner', price: 0, format: 'live', image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=600&q=80' },
+  { community: 'soul-food', title: 'Sunday soul kitchen', description: 'Comfort classics passed down through generations.', duration: '60 min', level: 'All levels', price: 15, format: 'video', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80' },
+  { community: 'recipes', title: 'One-pan weeknight wins', description: 'Fast, flavourful plates for busy creators.', duration: '30 min', level: 'Easy', price: 0, format: 'video', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' },
+  { community: 'healthy-eating', title: 'Green bowl fundamentals', description: 'Build balanced bowls with local ingredients.', duration: '25 min', level: 'Beginner', price: 0, format: 'video', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' },
+  { community: 'dance', title: 'Footwork foundations', description: 'Hip-hop basics for kitchen cyphers and battles.', duration: '20 min', level: 'Beginner', price: 0, format: 'video', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80' },
+  { community: 'fitness', title: 'Dance cardio warm-up', description: 'Get stage-ready before your next move drop.', duration: '15 min', level: 'All levels', price: 0, format: 'video', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80' },
+]
+
+function seedMarketplaceAndClasses() {
+  for (const community of COMMUNITIES) {
+    if (!tables.findOne('communities', { slug: community.slug })) {
+      tables.insert('communities', { ...community, member_count: 0 })
+    }
+  }
+
+  if (!tables.count('marketplace_listings')) {
+    for (const listing of MARKETPLACE_LISTINGS) {
+      tables.insert('marketplace_listings', {
+        community_id: communityId(listing.community),
+        title: listing.title,
+        description: listing.description,
+        price: listing.price,
+        currency: 'USD',
+        category: listing.category,
+        featured: listing.featured,
+        verified: listing.verified,
+        image: listing.image,
+        seller_id: null,
+      })
+    }
+  }
+
+  if (!tables.count('classes')) {
+    for (const lesson of CLASSES) {
+      tables.insert('classes', {
+        community_id: communityId(lesson.community),
+        title: lesson.title,
+        description: lesson.description,
+        duration: lesson.duration,
+        level: lesson.level,
+        price: lesson.price,
+        format: lesson.format,
+        image: lesson.image,
+        instructor_id: null,
+      })
+    }
+  }
 }
 
 export function upgradeContent() {
@@ -224,6 +289,7 @@ export function upgradeContent() {
 
   seedChallengeDemoData()
   seedCommunityDemoData()
+  seedMarketplaceAndClasses()
   syncCommunityMemberCounts()
 }
 
