@@ -5878,3 +5878,154 @@ img {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── Star ratings (The Stars) ── */
+.star-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.star-rating__stars {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+
+.star-rating__star {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--line);
+  cursor: default;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.star-rating--sm .star-rating__star {
+  font-size: 1.1rem;
+}
+
+.star-rating--interactive .star-rating__star {
+  cursor: pointer;
+}
+
+.star-rating--interactive .star-rating__star:hover {
+  transform: scale(1.12);
+}
+
+.star-rating__star--filled {
+  color: #f5b301;
+}
+
+.star-rating__meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.star-rating__meta--hint {
+  font-style: italic;
+}
+
+.media-card__stars {
+  color: #f5b301;
+}
+
+.detail__linked .star-rating {
+  margin-top: 0.75rem;
+}
+
+/* ── Celebration overlay ── */
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.celebrate__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 8, 20, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.celebrate__confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.celebrate__piece {
+  position: absolute;
+  top: -10%;
+  left: calc((var(--i) * 4.2%) + 2%);
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  background: hsl(calc(var(--i) * 15deg), 80%, 55%);
+  animation: celebrate-fall 2.8s ease-in forwards;
+  animation-delay: calc(var(--i) * 0.05s);
+  opacity: 0.9;
+}
+
+@keyframes celebrate-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.celebrate__card {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem 1.75rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: celebrate-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes celebrate-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.celebrate__emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.celebrate__badge-name {
+  font-weight: 700;
+  color: var(--color-brand);
+  margin: 0.25rem 0 0.5rem;
+}
+
+.celebrate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}

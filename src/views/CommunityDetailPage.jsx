@@ -263,7 +263,11 @@ export default function CommunityDetailPage() {
                   meta={`${move.style} · ${move.length}`}
                   portrait
                   play
-                  socialStats={{ applause: move.applauseCount, comments: move.commentCount }}
+                  socialStats={{
+                    applause: move.applauseCount,
+                    comments: move.commentCount,
+                    stars: move.starStats?.count ? move.starStats.average.toFixed(1) : undefined,
+                  }}
                 />
               ))}
             </div>
@@ -323,7 +327,11 @@ export default function CommunityDetailPage() {
                   tagClass="tag--food"
                   title={recipe.title}
                   meta={`${recipe.time} · ${recipe.level}`}
-                  socialStats={{ applause: recipe.applauseCount, comments: recipe.commentCount }}
+                  socialStats={{
+                    applause: recipe.applauseCount,
+                    comments: recipe.commentCount,
+                    stars: recipe.starStats?.count ? recipe.starStats.average.toFixed(1) : undefined,
+                  }}
                 />
               ))}
             </div>
@@ -348,7 +356,11 @@ export default function CommunityDetailPage() {
                   meta={`${move.style} · ${move.length}`}
                   portrait
                   play
-                  socialStats={{ applause: move.applauseCount, comments: move.commentCount }}
+                  socialStats={{
+                    applause: move.applauseCount,
+                    comments: move.commentCount,
+                    stars: move.starStats?.count ? move.starStats.average.toFixed(1) : undefined,
+                  }}
                 />
               ))}
             </div>

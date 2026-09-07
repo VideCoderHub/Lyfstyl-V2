@@ -60,7 +60,11 @@ export default function RecipesPage() {
                   meta={`${recipe.time} · ${recipe.level} · ${recipe.saves} saves${recipe.communityName ? ` · ${recipe.communityName}` : ''}`}
                   socialStats={
                     view !== 'compact'
-                      ? { applause: recipe.applauseCount, comments: recipe.commentCount }
+                      ? {
+                          applause: recipe.applauseCount,
+                          comments: recipe.commentCount,
+                          stars: recipe.starStats?.count ? recipe.starStats.average.toFixed(1) : undefined,
+                        }
                       : undefined
                   }
                 />

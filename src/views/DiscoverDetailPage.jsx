@@ -5,14 +5,17 @@ import CommentSection from '../components/CommentSection'
 import DetailBreadcrumb from '../components/DetailBreadcrumb'
 import MediaCard from '../components/MediaCard'
 import RelatedCards from '../components/RelatedCards'
+import StarRating from '../components/StarRating'
 import { Skeleton } from '../components/Skeleton'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { useCelebrate } from '../context/CelebrateContext'
 
 export default function DiscoverDetailPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { isAuthenticated, setMessage } = useAuth()
+  const { isAuthenticated, setMessage, refresh } = useAuth()
+  const { celebrate } = useCelebrate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -45,11 +48,37 @@ export default function DiscoverDetailPage() {
 
   const { item, linked, related } = data
 
-  async function starLinked() {
+  async function handleLinkedRate(rating) {
     if (!linked || !isAuthenticated) return router.push('/login')
     const type = linked.kind === 'recipe' ? 'recipe' : 'move'
-    await api.starContent(type, linked.id)
-    setMessage('Starred — +10 points')
+    const starData = await api.starContent(type, linked.id, rating)
+    const earnedPoints = starData.newBadges?.length || !linked.starred
+    setData((current) => ({
+      ...current,
+      linked: {
+        ...current.linked,
+        starred: true,
+        rating: starData.rating,
+        starStats: starData.starStats ?? current.linked.starStats,
+      },
+    }))
+    setMessage(
+      `Rated ${rating} star${rating === 1 ? '' : 's'}${earnedPoints ? ' — +10 points' : ''}`,
+    )
+    if (starData.newBadges?.length) {
+      celebrate({
+        title: 'Badge unlocked!',
+        badges: starData.newBadges,
+        shareText: `I just earned ${starData.newBadges[0].name} on Lyfstyl!`,
+      })
+      await refresh()
+    } else if (rating === 5) {
+      celebrate({
+        title: 'Five stars!',
+        message: 'You loved this — share the vibe with friends.',
+        shareText: `I gave 5 stars to "${linked.title}" on Lyfstyl`,
+      })
+    }
   }
 
   return (
@@ -95,10 +124,21 @@ export default function DiscoverDetailPage() {
                   play={linked.kind === 'move'}
                 />
                 {isAuthenticated ? (
-                  <button type="button" className="btn btn--ghost" onClick={starLinked}>
-                    Star featured content
-                  </button>
-                ) : null}
+                  <StarRating
+                    value={linked.rating ?? 0}
+                    average={linked.starStats?.average ?? 0}
+                    count={linked.starStats?.count ?? 0}
+                    interactive
+                    size="sm"
+                    onRate={handleLinkedRate}
+                  />
+                ) : (
+                  <StarRating
+                    average={linked.starStats?.average ?? 0}
+                    count={linked.starStats?.count ?? 0}
+                    size="sm"
+                  />
+                )}
               </div>
             </section>
           ) : null}

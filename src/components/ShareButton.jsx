@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext'
 
-export default function ShareButton({ title, text }) {
+export default function ShareButton({ title, text, label = 'Share' }) {
   const { setMessage } = useAuth()
 
   async function share() {
@@ -24,7 +24,7 @@ export default function ShareButton({ title, text }) {
   return (
     <button type="button" className="social-action" onClick={share}>
       <span className="social-action__icon" aria-hidden="true">↗</span>
-      <span>Share</span>
+      <span>{label}</span>
     </button>
   )
 }

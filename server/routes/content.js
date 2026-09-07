@@ -120,7 +120,7 @@ router.post('/recipes', requireAuth, (req, res) => {
     creator_id: req.user.id,
   })
 
-  const points = awardAndNotify(req.user.id, 40, { action: 'create_recipe', id: result.lastInsertRowid })
+  const { points } = awardAndNotify(req.user.id, 40, { action: 'create_recipe', id: result.lastInsertRowid })
   addNotification(req.user.id, 'post', 'Recipe published', `"${title}" is live on Lyfstyl.`)
 
   const submission = maybeAutoSubmit(req.user, challengeId, 'recipe', result.lastInsertRowid)
@@ -184,7 +184,7 @@ router.post('/moves', requireAuth, (req, res) => {
     creator_id: req.user.id,
   })
 
-  const points = awardAndNotify(req.user.id, 40, { action: 'create_move', id: result.lastInsertRowid })
+  const { points } = awardAndNotify(req.user.id, 40, { action: 'create_move', id: result.lastInsertRowid })
   addNotification(req.user.id, 'post', 'Move published', `"${title}" is live on Lyfstyl.`)
 
   const submission = maybeAutoSubmit(req.user, challengeId, 'move', result.lastInsertRowid)

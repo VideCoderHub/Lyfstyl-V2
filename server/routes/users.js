@@ -9,6 +9,7 @@ import {
   formatRecipe,
   getDashboard,
   getNotifications,
+  getStarStats,
 } from '../services/content.js'
 import { logActivity } from '../services/personalization.js'
 import { getUserCommunities } from '../services/communities.js'
@@ -182,23 +183,41 @@ router.patch('/me/onboarding', requireAuth, (req, res) => {
 
 router.post('/content/:type/:id/star', requireAuth, (req, res) => {
   const { type, id } = req.params
-  const rating = Number(req.body?.rating ?? 5)
+  const rating = Math.min(5, Math.max(1, Number(req.body?.rating ?? 5)))
   if (!['recipe', 'move', 'discover'].includes(type)) {
     return res.status(400).json({ error: 'Invalid content type.' })
   }
+  if (!Number.isFinite(rating)) {
+    return res.status(400).json({ error: 'Rating must be between 1 and 5.' })
+  }
+
+  const entityId = Number(id)
+  const existing = tables.findOne('content_stars', {
+    user_id: req.user.id,
+    entity_type: type,
+    entity_id: entityId,
+  })
 
   tables.upsertComposite('content_stars', ['user_id', 'entity_type', 'entity_id'], {
     user_id: req.user.id,
     entity_type: type,
-    entity_id: Number(id),
+    entity_id: entityId,
     rating,
-    created_at: new Date().toISOString(),
+    created_at: existing?.created_at ?? new Date().toISOString(),
   })
 
-  const points = awardAndNotify(req.user.id, 10, { action: 'star', type, id })
-  logActivity(req.user.id, 'star', type, Number(id), { rating })
+  const { points, newBadges } = existing
+    ? { points: tables.findOne('users', { id: req.user.id }).points, newBadges: [] }
+    : awardAndNotify(req.user.id, 10, { action: 'star', type, id })
+  logActivity(req.user.id, 'star', type, entityId, { rating, updated: Boolean(existing) })
 
-  res.json({ rating, points, badges: getUserBadges(req.user.id) })
+  res.json({
+    rating,
+    points,
+    newBadges,
+    starStats: getStarStats(type, entityId),
+    badges: getUserBadges(req.user.id),
+  })
 })
 
 export default router

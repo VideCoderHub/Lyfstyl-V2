@@ -14,6 +14,16 @@ function applaudedBy(userId, entityType, entityId) {
   )
 }
 
+export function getStarStats(entityType, entityId) {
+  const stars = tables.find('content_stars', { entity_type: entityType, entity_id: Number(entityId) })
+  if (!stars.length) return { count: 0, average: 0 }
+  const sum = stars.reduce((total, star) => total + Number(star.rating || 5), 0)
+  return {
+    count: stars.length,
+    average: Math.round((sum / stars.length) * 10) / 10,
+  }
+}
+
 export function communityFor(id) {
   const c = id ? tables.findOne('communities', { id }) : null
   return c
@@ -92,6 +102,7 @@ export function formatRecipe(row, userId) {
     starred: Boolean(starred),
     saved: Boolean(saved),
     rating: starred?.rating ?? null,
+    starStats: getStarStats('recipe', row.id),
   }
 }
 
@@ -126,6 +137,7 @@ export function formatMove(row, userId) {
     starred: Boolean(starred),
     saved: Boolean(saved),
     rating: starred?.rating ?? null,
+    starStats: getStarStats('move', row.id),
   }
 }
 
@@ -190,5 +202,13 @@ export function awardAndNotify(userId, points, meta) {
   const newBadgeIds = after.filter((b) => !before.includes(b.badge_id)).map((b) => b.badge_id)
   const newBadges = newBadgeIds.map((id) => tables.findOne('badges', { id })).filter(Boolean)
   notifyBadgeEarned(userId, newBadges)
-  return total
+  return {
+    points: total,
+    newBadges: newBadges.map((b) => ({
+      slug: b.slug,
+      name: b.name,
+      description: b.description,
+      category: b.category,
+    })),
+  }
 }

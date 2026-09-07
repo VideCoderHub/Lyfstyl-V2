@@ -41,6 +41,9 @@ export default function MediaCard({
           <div className="media-card__social">
             {socialStats.applause != null ? <span>👏 {socialStats.applause}</span> : null}
             {socialStats.comments != null ? <span>💬 {socialStats.comments}</span> : null}
+            {socialStats.stars != null ? (
+              <span className="media-card__stars">★ {socialStats.stars}</span>
+            ) : null}
           </div>
         ) : null}
         {actions}

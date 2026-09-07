@@ -118,7 +118,11 @@ export default function FeedPage() {
                   meta={`${item.creator?.name ?? 'Creator'} · ${item.meta}`}
                   portrait={item.portrait}
                   play={item.play}
-                  socialStats={{ applause: item.applauseCount, comments: item.commentCount }}
+                  socialStats={{
+                    applause: item.applauseCount,
+                    comments: item.commentCount,
+                    stars: item.starStats?.count ? item.starStats.average.toFixed(1) : undefined,
+                  }}
                 />
               ))}
             </div>

@@ -64,7 +64,11 @@ export default function MovesPage() {
                   play
                   socialStats={
                     view !== 'compact'
-                      ? { applause: move.applauseCount, comments: move.commentCount }
+                      ? {
+                          applause: move.applauseCount,
+                          comments: move.commentCount,
+                          stars: move.starStats?.count ? move.starStats.average.toFixed(1) : undefined,
+                        }
                       : undefined
                   }
                 />

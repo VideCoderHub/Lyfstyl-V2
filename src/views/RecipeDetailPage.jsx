@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import ApplauseButton from '../components/ApplauseButton'
 import ShareButton from '../components/ShareButton'
+import StarRating from '../components/StarRating'
 import CommentSection from '../components/CommentSection'
 import DetailBreadcrumb from '../components/DetailBreadcrumb'
 import RelatedCards from '../components/RelatedCards'
@@ -10,11 +11,13 @@ import ReviewSection from '../components/ReviewSection'
 import { Skeleton } from '../components/Skeleton'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { useCelebrate } from '../context/CelebrateContext'
 
 export default function RecipeDetailPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { isAuthenticated, setMessage } = useAuth()
+  const { isAuthenticated, setMessage, refresh } = useAuth()
+  const { celebrate } = useCelebrate()
   const [recipe, setRecipe] = useState(null)
   const [related, setRelated] = useState([])
   const [reviewStats, setReviewStats] = useState({ count: 0, average: 0 })
@@ -39,11 +42,33 @@ export default function RecipeDetailPage() {
     setMessage(data.saved ? 'Saved to your library' : 'Removed from library')
   }
 
-  async function star() {
+  async function handleRate(rating) {
     if (!isAuthenticated) return router.push('/login')
-    await api.starContent('recipe', id)
-    setRecipe((r) => ({ ...r, starred: true }))
-    setMessage('Starred — +10 points')
+    const data = await api.starContent('recipe', id, rating)
+    const earnedPoints = data.newBadges?.length || !recipe?.starred
+    setRecipe((r) => ({
+      ...r,
+      starred: true,
+      rating: data.rating,
+      starStats: data.starStats ?? r.starStats,
+    }))
+    setMessage(
+      `Rated ${rating} star${rating === 1 ? '' : 's'}${earnedPoints ? ' — +10 points' : ''}`,
+    )
+    if (data.newBadges?.length) {
+      celebrate({
+        title: 'Badge unlocked!',
+        badges: data.newBadges,
+        shareText: `I just earned ${data.newBadges[0].name} on Lyfstyl!`,
+      })
+      await refresh()
+    } else if (rating === 5) {
+      celebrate({
+        title: 'Five stars!',
+        message: 'You loved this recipe — share the vibe with friends.',
+        shareText: `I gave 5 stars to "${recipe.title}" on Lyfstyl`,
+      })
+    }
   }
 
   if (loading) {
@@ -91,6 +116,13 @@ export default function RecipeDetailPage() {
               </Link>
             ) : null}
             <p className="detail__lede">{recipe.description}</p>
+            <StarRating
+              value={recipe.rating ?? 0}
+              average={recipe.starStats?.average ?? 0}
+              count={recipe.starStats?.count ?? 0}
+              interactive={isAuthenticated}
+              onRate={handleRate}
+            />
             <div className="detail__actions">
               <ApplauseButton
                 type="recipe"
@@ -99,9 +131,6 @@ export default function RecipeDetailPage() {
                 initialApplauded={recipe.applauded}
               />
               <ShareButton title={recipe.title} text={recipe.description} />
-              <button type="button" className="btn btn--primary" onClick={star}>
-                {recipe.starred ? 'Starred' : 'Star recipe'}
-              </button>
               <button type="button" className="btn btn--outline" onClick={toggleSave}>
                 {recipe.saved ? 'Saved' : 'Save'}
               </button>
