@@ -10,7 +10,7 @@ const nextConfig = {
     root: projectRoot,
   },
   async rewrites() {
-    const apiOrigin = process.env.API_ORIGIN || 'http://localhost:3001'
+    const apiOrigin = process.env.API_ORIGIN || 'http://localhost:5000'
     return [
       { source: '/api/:path*', destination: `${apiOrigin}/api/:path*` },
       { source: '/uploads/:path*', destination: `${apiOrigin}/uploads/:path*` },
