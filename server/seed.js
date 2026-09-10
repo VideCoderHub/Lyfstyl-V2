@@ -122,7 +122,6 @@ const MOVE_EXTRAS = {
   },
 }
 
-}
 
 const MARKETPLACE_LISTINGS = [
   { community: 'street-food', title: 'Portable grill kit', description: 'Verified merchant · perfect for night market pop-ups.', price: 89, category: 'equipment', featured: 1, verified: 1, image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80' },
